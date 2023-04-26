@@ -1,17 +1,25 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = env("DATABASE_URL")
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DB_URL")
 }
 
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model Files {
+  ItemID       Int       @id(map: "PK_Files") @default(autoincrement())
+  Name         String    @db.NChar(40)
+  ParentID     Int?
+  size         BigInt?
+  IsFile       Boolean?
+  MimeType     String?   @db.NChar(200)
+  Content      Bytes?
+  DateModified DateTime? @db.DateTime
+  DateCreated  DateTime? @db.DateTime
+  HasChild     Boolean?
+  IsRoot       Boolean?
+  Type         String?   @db.VarChar(255)
+  FilterPath   String?   @db.NVarChar(200)
 }
