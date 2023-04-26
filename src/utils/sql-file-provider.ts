@@ -47,8 +47,8 @@ constructor() {
       data: {
         Name: name,
         ParentID: null,
-        size: 0,
-        IsFile: false,
+        size: BigInt(0),
+        IsFile: true,
         MimeType: null,
         Content: null,
         DateModified: new Date(),
