@@ -5,19 +5,9 @@ import querystring from 'querystring'
 import multer from 'multer'
 import { Files } from '@prisma/client'
 
-interface FileManagerFile {
-    name: string
-    size: number
-    dateModified: string
-    hasChild: boolean
-    isFile: boolean
-    type: string
-    filterPath: string
-}
-
 interface FileManagerResponse {
-    cwd: FileManagerFile
-    files: FileManagerFile[]
+    cwd: Files
+    files: Files[]
 }
 interface ReadAction {
     action: 'read'
@@ -62,32 +52,41 @@ export default async function handler(
         switch (action) {
             case 'read':
                 const path = (body.path as string) || '/'
-                const fileList: FileManagerFile[] =
-                    await sqlFileProvider.getFileList(path)
-                console.log('fileList:', fileList)
-                // res.status(200).json(fileList);
+                const fileList: Files[] = await sqlFileProvider.getFileList()
+                console.log(fileList)
+                // res.status(200).json(fileList)
                 const response: FileManagerResponse = {
                     cwd: {
                         name: '/',
                         size: 0,
-                        dateModified: new Date().toISOString(),
+                        dateModified: new Date(),
                         hasChild: true,
                         isFile: false,
                         type: 'Folder',
                         filterPath: '/',
+                        mimeType: '',
+                        content: new Buffer(''),
+                        dateCreated: new Date(),
+                        isRoot: true,
+                        parentID: null,
                     },
                     files: fileList,
                 }
+
+                console.log(response);
                 res.status(200).json(response)
                 break
 
             case 'create':
                 const folderPath = body.path
                 const folderName = body.name
+                console.log('folderPath', folderPath)
+                console.log('folderName', folderName)
                 const newFolder = await sqlFileProvider.createFolder(
                     folderPath,
                     folderName
                 )
+                console.log(newFolder)
                 res.status(200).json(newFolder)
 
                 break

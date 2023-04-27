@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlserver"
-  url      = env("DATABASE_URL")
+  provider          = "sqlserver"
+  url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DB_URL")
 }
 
@@ -12,7 +12,7 @@ model Files {
   ItemID       Int       @id(map: "PK_Files") @default(autoincrement())
   Name         String    @db.NChar(40)
   ParentID     Int?
-  size         BigInt?
+  Size         Int?
   IsFile       Boolean?
   MimeType     String?   @db.NChar(200)
   Content      Bytes?
@@ -23,3 +23,4 @@ model Files {
   Type         String?   @db.VarChar(255)
   FilterPath   String?   @db.NVarChar(200)
 }
+

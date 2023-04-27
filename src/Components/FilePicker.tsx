@@ -8,7 +8,7 @@ import {
 } from '@syncfusion/ej2-react-filemanager'
 
 export default function FilePicker() {
-    const hostUrl = 'http://localhost:3001/'
+    const hostUrl = 'http://localhost:3000/'
     return (
         <div>
             <div className="control-section">
@@ -16,7 +16,6 @@ export default function FilePicker() {
                     id="overview_file"
                     ajaxSettings={{
                         url: hostUrl + 'api/file-manager',
-                        // Update the following API routes based on your implementation
                         // getImageUrl: hostUrl + 'api/SQLProvider/SQLGetImage',
                         // uploadUrl: hostUrl + 'api/SQLProvider/SQLUpload',
                         // downloadUrl: hostUrl + 'api/SQLProvider/SQLDownload',
