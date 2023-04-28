@@ -5,9 +5,26 @@ import querystring from 'querystring'
 import multer from 'multer'
 import { Files } from '@prisma/client'
 
+interface SyncFiles {
+  itemID?: number
+  name: string
+  parentID: number | null
+  size: number | null
+  isFile: boolean | null
+  mimeType: string | null
+  content: Buffer | null
+  dateModified: Date | null
+  dateCreated: Date | null
+  hasChild: boolean | null
+  isRoot: boolean | null
+  type: string | null
+  filterPath: string | null
+
+}
+
 interface FileManagerResponse {
-    cwd: Files
-    files: Files[]
+    cwd: SyncFiles
+    files: SyncFiles[]
 }
 interface ReadAction {
     action: 'read'
@@ -39,6 +56,7 @@ export default async function handler(
     const rawBody = (await buffer(req)).toString()
 
     const isJson = req.headers['content-type'] === 'application/json'
+
     req.body = isJson ? JSON.parse(rawBody) : querystring.parse(rawBody)
 
     req.body = isJson ? JSON.parse(rawBody) : querystring.parse(rawBody)
@@ -52,7 +70,7 @@ export default async function handler(
         switch (action) {
             case 'read':
                 const path = (body.path as string) || '/'
-                const fileList: Files[] = await sqlFileProvider.getFileList()
+                const fileList: SyncFiles[] = await sqlFileProvider.getFileList()
                 console.log(fileList)
                 // res.status(200).json(fileList)
                 const response: FileManagerResponse = {
@@ -111,7 +129,7 @@ export default async function handler(
             // // Implement other actions like 'delete', 'rename', etc.
             default:
                 res.setHeader('Allow', ['POST'])
-                res.status(405).end(`Action ${action} Not Allowed`)
+                res.status(405).end(`Action Not Allowed`)
         }
     } else {
         res.setHeader('Allow', ['POST'])

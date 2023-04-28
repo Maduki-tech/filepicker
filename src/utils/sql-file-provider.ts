@@ -1,4 +1,20 @@
 import { PrismaClient, type Files } from '@prisma/client'
+interface SyncFiles {
+  itemID?: number
+  name: string
+  parentID: number | null
+  size: number | null
+  isFile: boolean | null
+  mimeType: string | null
+  content: Buffer | null
+  dateModified: Date | null
+  dateCreated: Date | null
+  hasChild: boolean | null
+  isRoot: boolean | null
+  type: string | null
+  filterPath: string | null
+
+}
 
 export default class SQLFileProvider {
     private prisma: PrismaClient
@@ -7,7 +23,7 @@ export default class SQLFileProvider {
         this.prisma = new PrismaClient()
     }
 
-    async getFileList(): Promise<Files[]> {
+    async getFileList(): Promise<SyncFiles[]> {
         try {
             const files = await this.prisma.files.findMany({
                 select: {
