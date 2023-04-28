@@ -1,25 +1,25 @@
+// eslint-disable-next-line
 import { type NextApiRequest, type NextApiResponse } from 'next'
 import SQLFileProvider from '../../utils/sql-file-provider'
 import { buffer } from 'micro'
 import querystring from 'querystring'
-import multer from 'multer'
-import { Files } from '@prisma/client'
+// import multer from 'multer'
+import { type Files } from '@prisma/client'
 
 interface SyncFiles {
-  itemID?: number
-  name: string
-  parentID: number | null
-  size: number | null
-  isFile: boolean | null
-  mimeType: string | null
-  content: Buffer | null
-  dateModified: Date | null
-  dateCreated: Date | null
-  hasChild: boolean | null
-  isRoot: boolean | null
-  type: string | null
-  filterPath: string | null
-
+    itemID?: number
+    name: string
+    parentID: number | null
+    size: number | null
+    isFile: boolean | null
+    mimeType: string | null
+    content: Buffer | null
+    dateModified: Date | null
+    dateCreated: Date | null
+    hasChild: boolean | null
+    isRoot: boolean | null
+    type: string | null
+    filterPath: string | null
 }
 
 interface FileManagerResponse {
@@ -45,7 +45,7 @@ export const config = {
         bodyParser: false,
     },
 }
-const upload = multer()
+// const upload = multer()
 
 const sqlFileProvider = new SQLFileProvider()
 
@@ -57,8 +57,10 @@ export default async function handler(
 
     const isJson = req.headers['content-type'] === 'application/json'
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     req.body = isJson ? JSON.parse(rawBody) : querystring.parse(rawBody)
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     req.body = isJson ? JSON.parse(rawBody) : querystring.parse(rawBody)
 
     const { method } = req
@@ -69,8 +71,9 @@ export default async function handler(
 
         switch (action) {
             case 'read':
-                const path = (body.path as string) || '/'
-                const fileList: SyncFiles[] = await sqlFileProvider.getFileList()
+                // const path = (body.path as string) || '/'
+                const fileList: SyncFiles[] =
+                    await sqlFileProvider.getFileList()
                 console.log(fileList)
                 // res.status(200).json(fileList)
                 const response: FileManagerResponse = {
@@ -91,7 +94,7 @@ export default async function handler(
                     files: fileList,
                 }
 
-                console.log(response);
+                console.log(response)
                 res.status(200).json(response)
                 break
 
@@ -133,6 +136,6 @@ export default async function handler(
         }
     } else {
         res.setHeader('Allow', ['POST'])
-        res.status(405).end(`Method ${method!} Not Allowed`)
+        res.status(405).end(`Method Not Allowed`)
     }
 }
