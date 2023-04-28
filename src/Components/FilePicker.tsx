@@ -8,7 +8,7 @@ import {
 } from '@syncfusion/ej2-react-filemanager'
 
 export default function FilePicker() {
-    const hostUrl = 'http://localhost:3000/'
+    const hostUrl = 'https://filepicker.vercel.app/'
     return (
         <div>
             <div className="control-section">
