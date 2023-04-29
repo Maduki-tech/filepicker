@@ -1,19 +1,18 @@
 import { PrismaClient, type Files } from '@prisma/client'
 interface SyncFiles {
-  itemID?: number
-  name: string
-  parentID: number | null
-  size: number | null
-  isFile: boolean | null
-  mimeType: string | null
-  content: Buffer | null
-  dateModified: Date | null
-  dateCreated: Date | null
-  hasChild: boolean | null
-  isRoot: boolean | null
-  type: string | null
-  filterPath: string | null
-
+    itemID?: number
+    name: string
+    parentID: number | null
+    size: number | null
+    isFile: boolean | null
+    mimeType: string | null
+    content: Buffer | null
+    dateModified: Date | null
+    dateCreated: Date | null
+    hasChild: boolean | null
+    isRoot: boolean | null
+    type: string | null
+    filterPath: string | null
 }
 
 export default class SQLFileProvider {
@@ -23,9 +22,13 @@ export default class SQLFileProvider {
         this.prisma = new PrismaClient()
     }
 
-    async getFileList(): Promise<SyncFiles[]> {
+    async getFileList(path: string): Promise<SyncFiles[]> {
+        console.log('read', path)
         try {
             const files = await this.prisma.files.findMany({
+                where: {
+                    FilterPath: path,
+                },
                 select: {
                     Name: true,
                     IsFile: true,
@@ -41,21 +44,20 @@ export default class SQLFileProvider {
                     ParentID: true,
                 },
             })
-            console.log('files:', files)
 
             return files.map((file) => ({
-                    name: file.Name,
-                    isFile: file.IsFile,
-                    size: file.Size,
-                    dateModified: file.DateModified,
-                    type: file.Type,
-                    filterPath: file.FilterPath,
-                    hasChild: file.HasChild,
-                    isRoot: file.IsRoot,
-                    mimeType: file.MimeType,
-                    content: file.Content,
-                    dateCreated: file.DateCreated,
-                    parentID: file.ParentID,
+                name: file.Name,
+                isFile: file.IsFile,
+                size: file.Size,
+                dateModified: file.DateModified,
+                type: file.Type,
+                filterPath: file.FilterPath,
+                hasChild: file.HasChild,
+                isRoot: file.IsRoot,
+                mimeType: file.MimeType,
+                content: file.Content,
+                dateCreated: file.DateCreated,
+                parentID: file.ParentID,
             }))
         } catch (error) {
             console.error('Error in getFileList:', error)
@@ -63,14 +65,15 @@ export default class SQLFileProvider {
         }
     }
 
-    async createFolder(path: string, name: string): Promise<Files> {
+    async createFolder(path: string, name: string): Promise<SyncFiles> {
         const filterPath = path.endsWith('/') ? path : path + '/'
-        const newFolder = await this.prisma.files.create({
+        console.log('in function :',filterPath)
+        await this.prisma.files.create({
             data: {
                 Name: name.replace(' ', ''),
                 ParentID: null,
                 Size: 0,
-                IsFile: true,
+                IsFile: false,
                 MimeType: '',
                 Content: new Buffer(''),
                 DateModified: new Date(),
@@ -78,11 +81,27 @@ export default class SQLFileProvider {
                 HasChild: false,
                 IsRoot: false,
                 Type: 'Folder',
-                FilterPath: filterPath + name + '/',
+                FilterPath: filterPath === '/' ? '/' : '/' + name + '/',
             },
         })
 
-        return newFolder
+        const dataToReturn = {
+            name: name.replace(' ', ''),
+            parentID: null,
+            size: 0,
+            isFile: false,
+            mimeType: '',
+            content: new Buffer(''),
+            dateModified: new Date(),
+            dateCreated: new Date(),
+            hasChild: false,
+            isRoot: false,
+            type: 'Folder',
+            filterPath: filterPath + name + '/',
+        }
+
+
+        return dataToReturn
     }
 
     async createFile(path: string, file: Express.Multer.File): Promise<Files> {

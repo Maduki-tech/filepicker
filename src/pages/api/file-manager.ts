@@ -38,6 +38,10 @@ interface CreateAction {
     data: Files
 }
 
+interface FileSyncArray {
+    files: SyncFiles[]
+}
+
 type FileManagerRequestBody = ReadAction | CreateAction
 
 export const config = {
@@ -51,7 +55,7 @@ const sqlFileProvider = new SQLFileProvider()
 
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<FileManagerResponse | string | Files>
+    res: NextApiResponse<FileManagerResponse | string | Files | FileSyncArray>
 ) {
     const rawBody = (await buffer(req)).toString()
 
@@ -72,9 +76,13 @@ export default async function handler(
         switch (action) {
             case 'read':
                 // const path = (body.path as string) || '/'
-                const fileList: SyncFiles[] =
-                    await sqlFileProvider.getFileList()
-                console.log(fileList)
+                if (body.path === undefined) {
+                    body.path = '/'
+                }
+
+                const fileList: SyncFiles[] = await sqlFileProvider.getFileList(
+                    body.path
+                )
                 // res.status(200).json(fileList)
                 const response: FileManagerResponse = {
                     cwd: {
@@ -94,21 +102,19 @@ export default async function handler(
                     files: fileList,
                 }
 
-                console.log(response)
                 res.status(200).json(response)
                 break
 
             case 'create':
                 const folderPath = body.path
                 const folderName = body.name
-                console.log('folderPath', folderPath)
-                console.log('folderName', folderName)
+                console.log('folderPath: ', folderPath)
+                console.log('folderName: ', folderName)
                 const newFolder = await sqlFileProvider.createFolder(
                     folderPath,
                     folderName
                 )
-                console.log(newFolder)
-                res.status(200).json(newFolder)
+                res.status(200).json({ files: [newFolder] })
 
                 break
 
