@@ -23,7 +23,7 @@ export default class SQLFileProvider {
     }
 
     async getFileList(path: string): Promise<SyncFiles[]> {
-        console.log('read', path)
+        console.log('path', path)
         try {
             const files = await this.prisma.files.findMany({
                 where: {
@@ -67,7 +67,6 @@ export default class SQLFileProvider {
 
     async createFolder(path: string, name: string): Promise<SyncFiles> {
         const filterPath = path.endsWith('/') ? path : path + '/'
-        console.log('in function :',filterPath)
         await this.prisma.files.create({
             data: {
                 Name: name.replace(' ', ''),
@@ -81,7 +80,7 @@ export default class SQLFileProvider {
                 HasChild: false,
                 IsRoot: false,
                 Type: 'Folder',
-                FilterPath: filterPath === '/' ? '/' : '/' + name + '/',
+                FilterPath: filterPath === '/' ? '/' : path,
             },
         })
 
@@ -97,16 +96,18 @@ export default class SQLFileProvider {
             hasChild: false,
             isRoot: false,
             type: 'Folder',
-            filterPath: filterPath + name + '/',
+            filterPath: filterPath === '/' ? '/' : path,
         }
-
 
         return dataToReturn
     }
 
-    async createFile(path: string, file: Express.Multer.File): Promise<Files> {
+    async createFile(
+        path: string,
+        file: Express.Multer.File
+    ): Promise<SyncFiles> {
         const filterPath = path.endsWith('/') ? path : path + '/'
-        const newFile = await this.prisma.files.create({
+        await this.prisma.files.create({
             data: {
                 Name: file.originalname,
                 ParentID: null,
@@ -119,9 +120,24 @@ export default class SQLFileProvider {
                 HasChild: false,
                 IsRoot: false,
                 Type: 'File',
-                FilterPath: filterPath,
+                FilterPath: filterPath === '/' ? '/' : path,
             },
         })
+
+        const newFile = {
+            name: file.originalname,
+            parentID: null,
+            size: file.size,
+            isFile: true,
+            mimeType: file.mimetype,
+            content: file.buffer,
+            dateModified: new Date(),
+            dateCreated: new Date(),
+            hasChild: false,
+            isRoot: false,
+            type: 'File',
+            filterPath: filterPath === '/' ? '/' : path,
+        }
 
         return newFile
     }

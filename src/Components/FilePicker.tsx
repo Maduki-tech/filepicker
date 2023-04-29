@@ -17,9 +17,10 @@ export default function FilePicker() {
                     id="overview_file"
                     ajaxSettings={{
                         url: hostUrl + 'api/file-manager',
+                        uploadUrl: hostUrl + 'api/save',
                         // getImageUrl: hostUrl + 'api/SQLProvider/SQLGetImage',
-                        // uploadUrl: hostUrl + 'api/SQLProvider/SQLUpload',
                         // downloadUrl: hostUrl + 'api/SQLProvider/SQLDownload',
+
                     }}
                     toolbarSettings={{
                         items: [

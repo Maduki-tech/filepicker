@@ -5,6 +5,7 @@ import { buffer } from 'micro'
 import querystring from 'querystring'
 // import multer from 'multer'
 import { type Files } from '@prisma/client'
+import multer from 'multer'
 
 interface SyncFiles {
     itemID?: number
@@ -37,19 +38,25 @@ interface CreateAction {
     name: string
     data: Files
 }
+interface SaveAction {
+    action: 'Save'
+    path: string
+    name: string
+    data: Files
+}
 
 interface FileSyncArray {
     files: SyncFiles[]
 }
 
-type FileManagerRequestBody = ReadAction | CreateAction
+type FileManagerRequestBody = ReadAction | CreateAction | SaveAction
 
 export const config = {
     api: {
         bodyParser: false,
     },
 }
-// const upload = multer()
+const upload = multer()
 
 const sqlFileProvider = new SQLFileProvider()
 
@@ -72,6 +79,7 @@ export default async function handler(
 
     if (method === 'POST') {
         const action = body.action
+        console.log('action', action)
 
         switch (action) {
             case 'read':
@@ -108,8 +116,6 @@ export default async function handler(
             case 'create':
                 const folderPath = body.path
                 const folderName = body.name
-                console.log('folderPath: ', folderPath)
-                console.log('folderName: ', folderName)
                 const newFolder = await sqlFileProvider.createFolder(
                     folderPath,
                     folderName
@@ -118,23 +124,23 @@ export default async function handler(
 
                 break
 
-            // case 'upload':
-            //     // Handle file uploads with multer
-            //     upload.single('file')(req, res, async (err) => {
-            //         if (err) {
-            //             res.status(500).json({ error: err.message })
-            //             return
-            //         }
-            //
-            //         const filePath = body.path
-            //         const uploadedFile = req.file
-            //         const newFile = await sqlFileProvider.createFile(
-            //             filePath,
-            //             uploadedFile
-            //         )
-            //         res.status(200).json(newFile)
-            //     })
-            //     break
+            case 'Save':
+                upload.single('file')(req, res, async (err) => {
+                    if (err) {
+                        res.status(500).json({ error: err.message })
+                        return
+                    }
+
+                    const filePath = body.path
+                    const uploadedFile = req.file
+                    const newFile = await sqlFileProvider.createFile(
+                        filePath,
+                        uploadedFile
+                    )
+                    res.status(200).json({ files: [newFile] })
+                })
+                break
+
             // // Implement other actions like 'delete', 'rename', etc.
             default:
                 res.setHeader('Allow', ['POST'])
