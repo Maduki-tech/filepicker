@@ -1,19 +1,5 @@
-import { PrismaClient, type Files } from '@prisma/client'
-interface SyncFiles {
-    itemID?: number
-    name: string
-    parentID: number | null
-    size: number | null
-    isFile: boolean | null
-    mimeType: string | null
-    content: Buffer | null
-    dateModified: Date | null
-    dateCreated: Date | null
-    hasChild: boolean | null
-    isRoot: boolean | null
-    type: string | null
-    filterPath: string | null
-}
+import { PrismaClient } from '@prisma/client'
+import { SyncFiles } from '~/types/fileInterfaces'
 
 export default class SQLFileProvider {
     private prisma: PrismaClient
@@ -140,6 +126,46 @@ export default class SQLFileProvider {
         }
 
         return newFile
+    }
+
+    async moveFile(
+        sourcePath: string,
+        targetPath: string,
+        fileName: string
+    ): Promise<SyncFiles> {
+        // Retrieve the file from the source path
+        const file = await this.prisma.files.findFirst({
+            where: {
+                Name: fileName,
+                FilterPath: sourcePath,
+            },
+        })
+
+        if (!file) {
+            throw new Error('File not found')
+        }
+
+        // Update the file's FilterPath to the target path
+        const updatedFile = await this.prisma.files.update({
+            where: { ItemID: file.ItemID },
+            data: { FilterPath: targetPath },
+        })
+
+        // Return the moved file as a SyncFiles object
+        return {
+            name: updatedFile.Name,
+            parentID: updatedFile.ParentID,
+            size: updatedFile.Size,
+            isFile: updatedFile.IsFile,
+            mimeType: updatedFile.MimeType,
+            content: updatedFile.Content,
+            dateModified: updatedFile.DateModified,
+            dateCreated: updatedFile.DateCreated,
+            hasChild: updatedFile.HasChild,
+            isRoot: updatedFile.IsRoot,
+            type: updatedFile.Type,
+            filterPath: updatedFile.FilterPath,
+        }
     }
 
     // ... Implement other methods like createFolder, renameFile, remove, etc.
