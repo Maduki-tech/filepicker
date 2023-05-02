@@ -80,7 +80,53 @@ export default async function handler(
 
                 break
 
-            // case 'Save':
+            case 'move':
+                const sourcePath = body.path
+                const targetPath = body.targetPath
+                const fileName = body.name
+                const movedFile = await sqlFileProvider.moveFile(
+                    sourcePath,
+                    targetPath,
+                    fileName
+                )
+                res.status(200).json({ files: [movedFile] })
+                break
+
+            case 'copy':
+                const sourcePathCopy = body.path
+                const targetPathCopy = body.targetPath
+                const fileNameCopy = body.name
+                const copiedFile = await sqlFileProvider.copyFile(
+                    sourcePathCopy,
+                    targetPathCopy,
+                    fileNameCopy
+                )
+                res.status(200).json({ files: [copiedFile] })
+                break
+
+            case 'delete':
+                const pathRemove = body.path
+                const nameRemove = body.name
+                const removedFile = await sqlFileProvider.removeFile(
+                    pathRemove,
+                    nameRemove
+                )
+                res.status(200).json({ files: [removedFile] })
+                break
+
+            case 'rename':
+                const pathRename = body.path
+                const nameRename = body.name
+                const newName = body.newName
+                const renamedFile = await sqlFileProvider.renameFile(
+                    pathRename,
+                    nameRename,
+                    newName
+                )
+                res.status(200).json({ files: [renamedFile] })
+                break
+
+            // case 'upload':
             //     upload.single('file')(req, res, async (err) => {
             //         if (err) {
             //             res.status(500).json({ error: err.message })
@@ -97,17 +143,15 @@ export default async function handler(
             //     })
             //     break
 
-            case 'move':
-                const sourcePath = body.path
-                const targetPath = body.targetPath
-                const fileName = body.name
-                const movedFile = await sqlFileProvider.moveFile(
-                    sourcePath,
-                    targetPath,
-                    fileName
-                )
-                res.status(200).json({ files: [movedFile] })
-                break
+            // case 'download':
+            //     const pathDownload = body.path
+            //     const nameDownload = body.name
+            //     const downloadedFile = await sqlFileProvider.downloadFile(
+            //         pathDownload,
+            //         nameDownload
+            //     )
+            //     res.status(200).json({ files: [downloadedFile] })
+            //     break
 
             default:
                 res.setHeader('Allow', ['POST'])

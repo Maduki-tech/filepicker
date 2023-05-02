@@ -1,3 +1,5 @@
+import { Files } from "@prisma/client"
+
 export interface SyncFiles {
     itemID?: number
     name: string
@@ -44,6 +46,38 @@ export interface MoveAction {
     data: Files
 }
 
+export interface CopyAction {
+    action: 'copy'
+    path: string
+    targetPath: string
+    name: string
+    data: Files
+}
+
+export interface DeleteAction {
+    action: 'delete'
+    path: string
+    name: string
+    data: Files
+}
+
+export interface RenameAction {
+    action: 'rename'
+    path: string
+    name: string
+    newName: string
+    data: Files
+}
+
+export interface UploadAction {
+    action: 'upload'
+    path: string
+    name: string
+    data: Files
+}
+
+
+
 export interface FileSyncArray {
     files: SyncFiles[]
 }
@@ -53,3 +87,7 @@ export type FileManagerRequestBody =
     | CreateAction
     | SaveAction
     | MoveAction
+    | CopyAction
+    | DeleteAction
+    | RenameAction
+    | UploadAction

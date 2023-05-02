@@ -168,5 +168,131 @@ export default class SQLFileProvider {
         }
     }
 
-    // ... Implement other methods like createFolder, renameFile, remove, etc.
+    async copyFile(
+        sourcePath: string,
+        targetPath: string,
+        fileName: string
+    ): Promise<SyncFiles> {
+        // Retrieve the file from the source path
+        const file = await this.prisma.files.findFirst({
+            where: {
+                Name: fileName,
+                FilterPath: sourcePath,
+            },
+        })
+
+        if (!file) {
+            throw new Error('File not found')
+        }
+
+        // Create a new file with the same data as the source file
+        const newFile = await this.prisma.files.create({
+            data: {
+                Name: file.Name,
+                ParentID: file.ParentID,
+                Size: file.Size,
+                IsFile: file.IsFile,
+                MimeType: file.MimeType,
+                Content: file.Content,
+                DateModified: file.DateModified,
+                DateCreated: file.DateCreated,
+                HasChild: file.HasChild,
+                IsRoot: file.IsRoot,
+                Type: file.Type,
+                FilterPath: targetPath,
+            },
+        })
+
+        // Return the copied file as a SyncFiles object
+        return {
+            name: newFile.Name,
+            parentID: newFile.ParentID,
+            size: newFile.Size,
+            isFile: newFile.IsFile,
+            mimeType: newFile.MimeType,
+            content: newFile.Content,
+            dateModified: newFile.DateModified,
+            dateCreated: newFile.DateCreated,
+            hasChild: newFile.HasChild,
+            isRoot: newFile.IsRoot,
+            type: newFile.Type,
+            filterPath: newFile.FilterPath,
+        }
+    }
+
+    async removeFile(path: string, fileName: string): Promise<SyncFiles> {
+        // Retrieve the file from the source path
+        const file = await this.prisma.files.findFirst({
+            where: {
+                Name: fileName,
+                FilterPath: path,
+            },
+        })
+
+        if (!file) {
+            throw new Error('File not found')
+        }
+
+        // Delete the file
+        await this.prisma.files.delete({
+            where: { ItemID: file.ItemID },
+        })
+
+        // Return the deleted file as a SyncFiles object
+        return {
+            name: file.Name,
+            parentID: file.ParentID,
+            size: file.Size,
+            isFile: file.IsFile,
+            mimeType: file.MimeType,
+            content: file.Content,
+            dateModified: file.DateModified,
+            dateCreated: file.DateCreated,
+            hasChild: file.HasChild,
+            isRoot: file.IsRoot,
+            type: file.Type,
+            filterPath: file.FilterPath,
+        }
+
+    }
+
+    async renameFile(
+        path: string,
+        fileName: string,
+        newFileName: string
+    ): Promise<SyncFiles> {
+        // Retrieve the file from the source path
+        const file = await this.prisma.files.findFirst({
+            where: {
+                Name: fileName,
+                FilterPath: path,
+            },
+        })
+
+        if (!file) {
+            throw new Error('File not found')
+        }
+
+        // Update the file's name
+        const updatedFile = await this.prisma.files.update({
+            where: { ItemID: file.ItemID },
+            data: { Name: newFileName },
+        })
+
+        // Return the renamed file as a SyncFiles object
+        return {
+            name: updatedFile.Name,
+            parentID: updatedFile.ParentID,
+            size: updatedFile.Size,
+            isFile: updatedFile.IsFile,
+            mimeType: updatedFile.MimeType,
+            content: updatedFile.Content,
+            dateModified: updatedFile.DateModified,
+            dateCreated: updatedFile.DateCreated,
+            hasChild: updatedFile.HasChild,
+            isRoot: updatedFile.IsRoot,
+            type: updatedFile.Type,
+            filterPath: updatedFile.FilterPath,
+        }
+    }
 }
