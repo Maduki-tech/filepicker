@@ -9,18 +9,18 @@ import {
 
 export default function FilePicker() {
     // const hostUrl = 'https://filepicker.vercel.app/'
-     const hostUrl = 'http://localhost:3000/'
+    const hostUrl = 'http://localhost:3000/'
     return (
         <div>
             <div className="control-section">
                 <FileManagerComponent
+                    className="bg-white"
                     id="overview_file"
                     ajaxSettings={{
                         url: hostUrl + 'api/file-manager',
                         uploadUrl: hostUrl + 'api/save',
-                        // getImageUrl: hostUrl + 'api/SQLProvider/SQLGetImage',
-                        // downloadUrl: hostUrl + 'api/SQLProvider/SQLDownload',
-
+                        getImageUrl: hostUrl + 'api/file-manager',
+                        downloadUrl: hostUrl + 'api/file-manager',
                     }}
                     toolbarSettings={{
                         items: [
@@ -55,7 +55,7 @@ export default function FilePicker() {
                     }}
                     view={'Details'}
                     allowDragAndDrop={true}
-                    showThumbnail={false}
+                    showThumbnail={true}
                 >
                     <Inject services={[NavigationPane, DetailsView, Toolbar]} />
                 </FileManagerComponent>
@@ -63,4 +63,3 @@ export default function FilePicker() {
         </div>
     )
 }
-

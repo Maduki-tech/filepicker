@@ -126,7 +126,7 @@ export default async function handler(
                 res.status(200).json({ files: [renamedFile] })
                 break
 
-            // case 'upload':
+            // case 'Save':
             //     upload.single('file')(req, res, async (err) => {
             //         if (err) {
             //             res.status(500).json({ error: err.message })
