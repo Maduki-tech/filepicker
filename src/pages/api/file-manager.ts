@@ -127,15 +127,15 @@ export default async function handler(
                 break
 
 
-            case 'download':
-                const pathDownload = body.path
-                const nameDownload = body.name
-                const downloadedFile = await sqlFileProvider.downloadFile(
-                    pathDownload,
-                    nameDownload
-                )
-                res.status(200).json({ files: [downloadedFile] })
-                break
+            // case 'download':
+            //     const pathDownload = body.path
+            //     const nameDownload = body.name
+            //     const downloadedFile = await sqlFileProvider.downloadFile(
+            //         pathDownload,
+            //         nameDownload
+            //     )
+            //     res.status(200).json({ files: [downloadedFile] })
+            //     break
 
             default:
                 res.setHeader('Allow', ['POST'])

@@ -6,11 +6,10 @@ import {
     DetailsView,
     Toolbar,
 } from '@syncfusion/ej2-react-filemanager'
-import { env } from '~/env.mjs'
 
 export default function FilePicker() {
     // const hostUrl = 'https://filepicker.vercel.app/'
-    const hostUrl = env.NEXT_PUBLIC_URL
+    const hostUrl = 'http://localhost:3000/'
     return (
         <div>
             <div className="control-section">

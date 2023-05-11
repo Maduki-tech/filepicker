@@ -31,6 +31,12 @@ export interface CreateAction {
     name: string
     data: Files
 }
+export interface DownloadAction {
+    action: 'download'
+    path: string
+    name: string
+    data: Files
+}
 export interface SaveAction {
     action: 'Save'
     path: string
@@ -91,3 +97,4 @@ export type FileManagerRequestBody =
     | DeleteAction
     | RenameAction
     | UploadAction
+    | DownloadAction

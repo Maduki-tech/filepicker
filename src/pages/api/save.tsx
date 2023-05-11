@@ -1,19 +1,18 @@
-import { type NextApiRequest, type NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse } from 'next';
 import SQLFileProvider from '../../utils/sql-file-provider';
 import { buffer } from 'micro';
 import querystring from 'querystring';
-import { type Files } from '@prisma/client';
+import { Files } from '@prisma/client';
 import multer from 'multer';
 import { FileManagerRequestBody, FileManagerResponse, FileSyncArray } from '~/types/fileInterfaces';
-
 
 export const config = {
   api: {
     bodyParser: false,
   },
 };
-const upload = multer();
 
+const upload = multer();
 const sqlFileProvider = new SQLFileProvider();
 
 export default async function handler(
@@ -24,25 +23,26 @@ export default async function handler(
 
   const isJson = req.headers['content-type'] === 'application/json';
 
-  req.body = isJson ? JSON.parse(rawBody) : querystring.parse(rawBody);
+  req.body = isJson ? (JSON.parse(rawBody) as FileManagerRequestBody) : (querystring.parse(rawBody));
 
   const { method } = req;
-  const body = req.body as FileManagerRequestBody;
-  const action = body.action
+  const body: FileManagerRequestBody = req.body as FileManagerRequestBody; // Specify the type for req.body
+
+  const action = body.action;
   console.log('action', action);
 
-  if (method === 'POST' ) {
-    upload.single('file')(req, res, async (err) => {
-      if (err) {
-        res.status(500).json({ error: err.message });
-        return;
-      }
-
-      const filePath = body.path === undefined ? '/' : body.path;
-      const uploadedFile = req.file;
-      const newFile = await sqlFileProvider.createFile(filePath, uploadedFile);
-      res.status(200).json({ files: [newFile] });
-    });
+  if (method === 'POST') {
+    // upload.single('file')(req, res, async (err) => {
+    //   if (err) {
+    //     res.status(500).json({ error: err.message });
+    //     return;
+    //   }
+    //
+    //   const filePath = body.path === undefined ? '/' : body.path;
+    //   const uploadedFile = req.file;
+    //   const newFile = await sqlFileProvider.createFile(filePath, uploadedFile);
+    //   res.status(200).json({ files: [newFile] });
+    // });
   } else {
     res.status(405).end('Action Not Allowed');
   }
