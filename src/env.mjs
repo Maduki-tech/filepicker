@@ -17,6 +17,7 @@ const server = z.object({
 const client = z.object(
     /** @satisfies {Record<`NEXT_PUBLIC_${string}`, import('zod').ZodType>} */ ({
         NEXT_PUBLIC_LICENCE: z.string().min(1),
+        NEXT_PUBLIC_URL: z.string().min(1),
         // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
     })
 )
@@ -32,6 +33,7 @@ const processEnv = {
     NODE_ENV: process.env.NODE_ENV,
     SHADOW_DB_URL: process.env.SHADOW_DB_URL,
     NEXT_PUBLIC_LICENCE: process.env.NEXT_PUBLIC_LICENCE,
+    NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 }
 

@@ -126,32 +126,16 @@ export default async function handler(
                 res.status(200).json({ files: [renamedFile] })
                 break
 
-            // case 'Save':
-            //     upload.single('file')(req, res, async (err) => {
-            //         if (err) {
-            //             res.status(500).json({ error: err.message })
-            //             return
-            //         }
-            //
-            //         const filePath = body.path
-            //         const uploadedFile = req.file
-            //         const newFile = await sqlFileProvider.createFile(
-            //             filePath,
-            //             uploadedFile
-            //         )
-            //         res.status(200).json({ files: [newFile] })
-            //     })
-            //     break
 
-            // case 'download':
-            //     const pathDownload = body.path
-            //     const nameDownload = body.name
-            //     const downloadedFile = await sqlFileProvider.downloadFile(
-            //         pathDownload,
-            //         nameDownload
-            //     )
-            //     res.status(200).json({ files: [downloadedFile] })
-            //     break
+            case 'download':
+                const pathDownload = body.path
+                const nameDownload = body.name
+                const downloadedFile = await sqlFileProvider.downloadFile(
+                    pathDownload,
+                    nameDownload
+                )
+                res.status(200).json({ files: [downloadedFile] })
+                break
 
             default:
                 res.setHeader('Allow', ['POST'])
