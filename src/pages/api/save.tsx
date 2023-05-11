@@ -1,4 +1,3 @@
-// @disable-eslint 
 import {type  NextApiRequest,  type NextApiResponse } from 'next'
 import SQLFileProvider from '../../utils/sql-file-provider'
 import { type Files } from '@prisma/client'
