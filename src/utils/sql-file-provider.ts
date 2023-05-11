@@ -92,6 +92,7 @@ export default class SQLFileProvider {
         path: string,
         file: Express.Multer.File
     ): Promise<SyncFiles> {
+        console.log('file', file)
         const filterPath = path.endsWith('/') ? path : path + '/'
         await this.prisma.files.create({
             data: {

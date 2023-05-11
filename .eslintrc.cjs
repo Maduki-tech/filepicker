@@ -5,12 +5,12 @@ const path = require("path");
 const config = {
   overrides: [
     {
-      extends: [
-        "plugin:@typescript-eslint/recommended-requiring-type-checking",
-      ],
       files: ["*.ts", "*.tsx"],
       parserOptions: {
         project: path.join(__dirname, "tsconfig.json"),
+      },
+      rules: {
+        "@typescript-eslint/no-explicit-any": "off",
       },
     },
   ],
@@ -19,7 +19,6 @@ const config = {
     project: path.join(__dirname, "tsconfig.json"),
   },
   plugins: ["@typescript-eslint"],
-  extends: ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"],
   rules: {
     "@typescript-eslint/consistent-type-imports": [
       "warn",
@@ -33,3 +32,4 @@ const config = {
 };
 
 module.exports = config;
+
