@@ -10,6 +10,8 @@ export const config = {
     },
 }
 
+console.log(config)
+
 const upload = multer()
 const sqlFileProvider = new SQLFileProvider()
 

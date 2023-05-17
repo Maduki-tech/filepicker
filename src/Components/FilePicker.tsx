@@ -1,21 +1,32 @@
-import * as React from 'react'
+import * as React from 'react';
 import {
     FileManagerComponent,
     Inject,
     NavigationPane,
     DetailsView,
     Toolbar,
-} from '@syncfusion/ej2-react-filemanager'
-import { env } from '~/env.mjs'
+} from '@syncfusion/ej2-react-filemanager';
+import { env } from '~/env.mjs';
 
-export default function FilePicker() {
-    const hostUrl = env.NEXT_PUBLIC_URL
+export default function FilePicker({ setFile }) {
+    const hostUrl = env.NEXT_PUBLIC_URL;
+
+    const onFileSelect = (args) => {
+        const file = args.fileDetails;
+        if (file.isFile && file.type === 'pdf') {
+            console.log(args);
+            setFile(file.content);
+        }
+    };
+
+
     return (
         <div>
             <div className="control-section">
                 <FileManagerComponent
-                    className="bg-white"
+                    className=""
                     id="overview_file"
+                    fileOpen={onFileSelect}
                     ajaxSettings={{
                         url: hostUrl + 'api/file-manager',
                         uploadUrl: hostUrl + 'api/save',
@@ -62,5 +73,5 @@ export default function FilePicker() {
                 </FileManagerComponent>
             </div>
         </div>
-    )
+    );
 }
