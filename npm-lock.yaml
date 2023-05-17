@@ -92,8 +92,8 @@ dependencies:
     specifier: 18.2.0
     version: 18.2.0(react@18.2.0)
   styles:
-    specifier: link:@syncfusion/ej2-base/styles
-    version: link:@syncfusion/ej2-base/styles
+    specifier: @syncfusion/ej2-base/styles
+    version: @syncfusion/ej2-base/styles
   superjson:
     specifier: 1.12.2
     version: 1.12.2
