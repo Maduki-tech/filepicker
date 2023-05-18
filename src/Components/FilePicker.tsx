@@ -15,7 +15,7 @@ export default function FilePicker({ setFile }) {
         const file = args.fileDetails;
         if (file.isFile && file.type === 'pdf') {
             console.log(args);
-            setFile(file.content);
+            setFile(file);
         }
     };
 
