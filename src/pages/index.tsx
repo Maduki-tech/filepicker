@@ -3,17 +3,14 @@ import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import { useState } from 'react'
 import FilePicker from '~/Components/FilePicker'
-import FilePreview from '~/Components/FilePreview'
 import Navbar from '~/Components/Navbar'
-import Viewer from '~/Components/Viewer'
-
-// import { api } from "~/utils/api";
 const PDFViewer = dynamic(() => import("../Components/Viewer"), {
   ssr: false
 });
 
+
+
 const Home: NextPage = () => {
-    // const hello = api.example.hello.useQuery({ text: "from tRPC" });
     const [selectedFile, setSelectedFile] = useState(null);
     return (
         <>

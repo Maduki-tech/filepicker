@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import {
     Inject,
@@ -24,20 +24,25 @@ const DynamicPdfViewer = dynamic(
         ),
     { ssr: false }
 );
+type PDFFile = string | File | null;
 
-export default function FilePreview({fileContent}: {fileContent: string}) {
-    const hostUrl = env.NEXT_PUBLIC_URL;
-    const viewer = React.useRef(null);
-    const [firstLoad, setFirstLoad] = React.useState(true);
+export default function FilePreview({fileContent}) {
+    const [pdfFile, setPdfFile] = useState<PDFFile>(null);
+    const [firstLoad, setFirstLoad] = useState(true);
+
     useEffect(() => {
         if (firstLoad) {
             setFirstLoad(false);
             return;
         }
-        console.log(fileContent);
-        if (viewer.current) {
-            viewer.current.load(fileContent);
-        }
+        // create a File
+        const bytesData = fileContent.content.data;
+        const data = Buffer.from(bytesData).toString('base64');
+
+        // create blob and then create a File
+        const blob = new Blob([bytesData], { type: 'application/pdf' });
+        const file = new File([blob], 'file.pdf', { type: 'application/pdf' });
+        setPdfFile(file);
     }, [fileContent]);
 
     return (
@@ -46,8 +51,7 @@ export default function FilePreview({fileContent}: {fileContent: string}) {
                 {typeof window !== 'undefined' && (
                     <DynamicPdfViewer
                         id="container"
-                        ref={viewer}
-                        serviceUrl={hostUrl + 'api/'}
+                        documentPath={pdfFile}
                         style={{ height: '640px' }}
                     >
                         {/* Inject the required services */}
