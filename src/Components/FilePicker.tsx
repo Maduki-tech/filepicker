@@ -21,10 +21,10 @@ export default function FilePicker({ setFile }) {
 
 
     return (
-        <div>
+        <div className='h-full flex flex-grow'>
             <div className="control-section">
                 <FileManagerComponent
-                    className=""
+                    height={'100%'}
                     id="overview_file"
                     fileOpen={onFileSelect}
                     ajaxSettings={{

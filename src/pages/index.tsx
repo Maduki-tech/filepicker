@@ -1,14 +1,12 @@
-import { type NextPage } from 'next'
-import dynamic from 'next/dynamic'
-import Head from 'next/head'
-import { useState } from 'react'
-import FilePicker from '~/Components/FilePicker'
-import Navbar from '~/Components/Navbar'
-const PDFViewer = dynamic(() => import("../Components/Viewer"), {
-  ssr: false
+import { type NextPage } from 'next';
+import dynamic from 'next/dynamic';
+import Head from 'next/head';
+import { useState } from 'react';
+import FilePicker from '~/Components/FilePicker';
+import Navbar from '~/Components/Navbar';
+const PDFViewer = dynamic(() => import('../Components/Viewer'), {
+    ssr: false,
 });
-
-
 
 const Home: NextPage = () => {
     const [selectedFile, setSelectedFile] = useState(null);
@@ -20,13 +18,17 @@ const Home: NextPage = () => {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <Navbar />
-            <main className="w-full h-[calc(100vh-4rem)] grid grid-cols-2 p-8 bg-gray-400">
-                <FilePicker setFile={setSelectedFile}/>
+            <main
+                className={`w-full h-[calc(100vh-4rem)] flex gap-2 p-8 bg-gray-400`}
+            >
+                <FilePicker setFile={setSelectedFile} />
                 {/* <FilePreview fileContent={selectedFile}/> */}
-                <PDFViewer file={selectedFile}/>
+                <div className={`${selectedFile !== null ? '' : 'hidden'}`}>
+                    <PDFViewer file={selectedFile} />
+                </div>
             </main>
         </>
-    )
-}
+    );
+};
 
-export default Home
+export default Home;
