@@ -1,4 +1,3 @@
-// eslint-disable-next-line
 import { type NextApiRequest, type NextApiResponse } from 'next';
 import SQLFileProvider from '../../utils/sql-file-provider';
 import { buffer } from 'micro';
@@ -6,7 +5,7 @@ import querystring from 'querystring';
 import bodyParser from 'body-parser';
 import { type Files } from '@prisma/client';
 import multer from 'multer';
-import {
+import type {
     FileManagerRequestBody,
     FileManagerResponse,
     FileSyncArray,
@@ -19,20 +18,20 @@ export const config = {
     },
 };
 
-const upload = multer();
-
 const sqlFileProvider = new SQLFileProvider();
 
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<FileManagerResponse | string | Files | FileSyncArray>
 ) {
-    const rawBody = (await buffer(req)).toString();
-
     const isJson = req.headers['content-type'] === 'application/json';
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    req.body = isJson ? JSON.parse(rawBody) : querystring.parse(rawBody);
+    const chunks = [];
+    for await (const chunk of req) {
+        chunks.push(chunk);
+    }
+   
+    const rawBody = Buffer.concat(chunks).toString();
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     req.body = isJson ? JSON.parse(rawBody) : querystring.parse(rawBody);
@@ -42,11 +41,9 @@ export default async function handler(
 
     if (method === 'POST') {
         const action = body.action;
-        console.log('action', action);
 
         switch (action) {
             case 'read':
-                // const path = (body.path as string) || '/'
                 if (body.path === undefined) {
                     body.path = '/';
                 }
@@ -54,7 +51,8 @@ export default async function handler(
                 const fileList: SyncFiles[] = await sqlFileProvider.getFileList(
                     body.path
                 );
-                // res.status(200).json(fileList)
+
+                // prepare response
                 const response: FileManagerResponse = {
                     cwd: {
                         name: '/',
@@ -112,9 +110,9 @@ export default async function handler(
                 break;
 
             case 'delete':
-                const jsonParser = bodyParser.json({ limit: '100mb' }); // Set appropriate size limit
+                // TODO: NEED TO FIX THE FILE LIMIT
+                const jsonParser = bodyParser.json({ limit: '100mb' });
                 jsonParser(req, res, async () => {
-                    console.log('delete');
                     const pathRemove = body.path;
                     const nameRemove = body.name;
                     const removedFile = await sqlFileProvider.removeFile(

@@ -9,7 +9,6 @@ export default class SQLFileProvider {
     }
 
     async getFileList(path: string): Promise<SyncFiles[]> {
-        console.log('path', path);
         try {
             const files = await this.prisma.files.findMany({
                 where: {
@@ -331,4 +330,31 @@ export default class SQLFileProvider {
             filterPath: file.FilterPath,
         };
     }
+    // async downloadFile(path: string, fileName: string): Promise<SyncFiles> {
+    //     const file = await this.prisma.files.findFirst({
+    //         where: {
+    //             Name: fileName,
+    //             FilterPath: path,
+    //         },
+    //     });
+    //
+    //     if (!file) {
+    //         throw new Error('File not found');
+    //     }
+    //
+    //     return {
+    //         name: file.Name,
+    //         parentID: file.ParentID,
+    //         size: file.Size,
+    //         isFile: file.IsFile,
+    //         mimeType: file.MimeType,
+    //         content: file.Content,
+    //         dateModified: file.DateModified,
+    //         dateCreated: file.DateCreated,
+    //         hasChild: file.HasChild,
+    //         isRoot: file.IsRoot,
+    //         type: file.Type,
+    //         filterPath: file.FilterPath,
+    //     };
+    // }
 }
