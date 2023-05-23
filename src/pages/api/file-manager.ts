@@ -24,29 +24,20 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<FileManagerResponse | string | Files | FileSyncArray>
 ) {
-    // const chunks = [];
-    // for await (const chunk of req) {
-    //     chunks.push(chunk);
-    // }
-    //   
-    // const rawBody = Buffer.concat(chunks).toString();
-    //
-    //
-
-        const rawBody = (await buffer(req)).toString();
-
     const isJson = req.headers['content-type'] === 'application/json';
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    req.body = isJson ? JSON.parse(rawBody) : querystring.parse(rawBody);
+    const chunks = [];
+    for await (const chunk of req) {
+        chunks.push(chunk);
+    }
+   
+    const rawBody = Buffer.concat(chunks).toString();
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     req.body = isJson ? JSON.parse(rawBody) : querystring.parse(rawBody);
 
     const { method } = req;
     const body = req.body as FileManagerRequestBody;
-
-
 
     if (method === 'POST') {
         const action = body.action;
