@@ -22,56 +22,56 @@ export default function FilePicker({ setFile }) {
 
     return (
         <div className='h-full flex flex-grow'>
-            <div className="control-section">
-                <FileManagerComponent
-                    height={'100%'}
-                    id="overview_file"
-                    fileOpen={onFileSelect}
-                    ajaxSettings={{
-                        url: hostUrl + 'api/file-manager',
-                        uploadUrl: hostUrl + 'api/save',
-                        getImageUrl: hostUrl + 'api/file-manager',
-                        downloadUrl: hostUrl + 'api/file-manager',
-                    }}
-                    toolbarSettings={{
-                        items: [
-                            'NewFolder',
-                            'Upload',
-                            'SortBy',
-                            'Cut',
-                            'Copy',
-                            'Paste',
-                            'Delete',
-                            'Refresh',
-                            'Download',
-                            'Rename',
-                            'Selection',
-                            'View',
-                            'Details',
-                        ],
-                    }}
-                    contextMenuSettings={{
-                        layout: [
-                            'SortBy',
-                            'View',
-                            'Refresh',
-                            '|',
-                            'Paste',
-                            '|',
-                            'NewFolder',
-                            '|',
-                            'Details',
-                            '|',
-                            'SelectAll',
-                        ],
-                    }}
-                    view={'Details'}
-                    allowDragAndDrop={true}
-                    showThumbnail={true}
-                >
-                    <Inject services={[NavigationPane, DetailsView, Toolbar]} />
-                </FileManagerComponent>
-            </div>
+            {/* <div className="control-section"> */}
+            {/*     <FileManagerComponent */}
+            {/*         height={'100%'} */}
+            {/*         id="overview_file" */}
+            {/*         fileOpen={onFileSelect} */}
+            {/*         ajaxSettings={{ */}
+            {/*             url: hostUrl + 'api/file-manager', */}
+            {/*             uploadUrl: hostUrl + 'api/save', */}
+            {/*             getImageUrl: hostUrl + 'api/file-manager', */}
+            {/*             downloadUrl: hostUrl + 'api/file-manager', */}
+            {/*         }} */}
+            {/*         toolbarSettings={{ */}
+            {/*             items: [ */}
+            {/*                 'NewFolder', */}
+            {/*                 'Upload', */}
+            {/*                 'SortBy', */}
+            {/*                 'Cut', */}
+            {/*                 'Copy', */}
+            {/*                 'Paste', */}
+            {/*                 'Delete', */}
+            {/*                 'Refresh', */}
+            {/*                 'Download', */}
+            {/*                 'Rename', */}
+            {/*                 'Selection', */}
+            {/*                 'View', */}
+            {/*                 'Details', */}
+            {/*             ], */}
+            {/*         }} */}
+            {/*         contextMenuSettings={{ */}
+            {/*             layout: [ */}
+            {/*                 'SortBy', */}
+            {/*                 'View', */}
+            {/*                 'Refresh', */}
+            {/*                 '|', */}
+            {/*                 'Paste', */}
+            {/*                 '|', */}
+            {/*                 'NewFolder', */}
+            {/*                 '|', */}
+            {/*                 'Details', */}
+            {/*                 '|', */}
+            {/*                 'SelectAll', */}
+            {/*             ], */}
+            {/*         }} */}
+            {/*         view={'Details'} */}
+            {/*         allowDragAndDrop={true} */}
+            {/*         showThumbnail={true} */}
+            {/*     > */}
+            {/*         <Inject services={[NavigationPane, DetailsView, Toolbar]} /> */}
+            {/*     </FileManagerComponent> */}
+            {/* </div> */}
         </div>
     );
 }
