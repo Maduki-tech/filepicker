@@ -26,12 +26,17 @@ export default async function handler(
 ) {
     const isJson = req.headers['content-type'] === 'application/json';
 
-    const chunks = [];
-    for await (const chunk of req) {
-        chunks.push(chunk);
-    }
-   
-    const rawBody = Buffer.concat(chunks).toString();
+    // const chunks = [];
+    // for await (const chunk of req) {
+    //     chunks.push(chunk);
+    // }
+    //   
+    // const rawBody = Buffer.concat(chunks).toString();
+    //
+    //
+    
+    const rawBody:string = await buffer(req).then((buf) => buf.toString());
+
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     req.body = isJson ? JSON.parse(rawBody) : querystring.parse(rawBody);
