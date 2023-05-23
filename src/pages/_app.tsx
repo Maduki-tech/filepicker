@@ -4,13 +4,16 @@ import '~/styles/globals.css';
 import { env } from '~/env.mjs';
 import { registerLicense } from '@syncfusion/ej2-base';
 import { ClerkProvider } from '@clerk/nextjs';
+import Script from 'next/script';
 
 registerLicense(env.NEXT_PUBLIC_LICENCE);
 const MyApp: AppType = ({ Component, pageProps }) => {
     return (
-        <ClerkProvider>
-            <Component {...pageProps} />
-        </ClerkProvider>
+        <>
+            <ClerkProvider>
+                <Component {...pageProps} />
+            </ClerkProvider>
+        </>
     );
 };
 

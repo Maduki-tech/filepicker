@@ -8,19 +8,104 @@ datasource db {
   shadowDatabaseUrl = env("SHADOW_DB_URL")
 }
 
-model Files {
-  ItemID       Int       @id(map: "PK_Files") @default(autoincrement())
-  Name         String    @db.NChar(40)
-  ParentID     Int?
-  Size         Int?
-  IsFile       Boolean?
-  MimeType     String?   @db.NChar(200)
-  Content      Bytes?
-  DateModified DateTime? @db.DateTime
-  DateCreated  DateTime? @db.DateTime
-  HasChild     Boolean?
-  IsRoot       Boolean?
-  Type         String?   @db.VarChar(255)
-  FilterPath   String?   @db.NVarChar(200)
+model Folder {
+  folderID     Int       @id @default(autoincrement())
+  name         String    @db.VarChar(40)
+  parentID     Int?
+  dateCreated  DateTime? @db.DateTime
+  dateModified DateTime? @db.DateTime
+  children     Folder[]  @relation("FolderToFolder")
+  parent       Folder?   @relation("FolderToFolder", fields: [parentID], references: [folderID], onDelete: NoAction, onUpdate: NoAction)
+  files        File[]    @relation("FolderToFile")
 }
 
+model File {
+  fileID       Int       @id @default(autoincrement())
+  name         String    @db.VarChar(40)
+  parentFolderID Int?
+  size         Int?
+  type         String?
+  content      Bytes?
+  dateCreated  DateTime? @db.DateTime
+  dateModified DateTime? @db.DateTime
+  folder       Folder?   @relation("FolderToFile", fields: [parentFolderID], references: [folderID])
+}
+
+
+model akte {
+  id                    String        @id(map: "PK_akte") @default(dbgenerated("newid()"), map: "DF_akte_id") @db.UniqueIdentifier
+  aktenschrank_id       String?       @db.UniqueIdentifier
+  aktenname             String        @db.VarChar(200)
+  aktenzeichen          String        @db.VarChar(12)
+  sachbearbeiter        String?       @db.NChar(10)
+  vorlage_briefkopf     String?       @db.UniqueIdentifier
+  vorlage_briefbaustein String?       @db.UniqueIdentifier
+  ordner_id             String?       @db.VarChar(200)
+  angelegt_am           DateTime      @default(now(), map: "DF_akte_angelegt_am") @db.DateTime
+  ge_ndert_am           DateTime      @default(now(), map: "DF_akte_geändert_am") @map("geändert_am") @db.DateTime
+  angelegt_von          String?       @db.NChar(10)
+  ge_ndert_von          String?       @map("geändert_von") @db.NChar(10)
+  aktenschrank          aktenschrank? @relation(fields: [aktenschrank_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_akte_team")
+  beteiligter           beteiligter[]
+}
+
+model aktenschrank {
+  id          String  @id(map: "PK_aktenschrank") @default(dbgenerated("newid()"), map: "DF_aktenschrank_id") @db.UniqueIdentifier
+  team_id     String? @db.UniqueIdentifier
+  bezeichnung String  @db.VarChar(200)
+  akte        akte[]
+  team        team?   @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_aktenschrank_team")
+}
+
+model beteiligter {
+  id                                        String          @id(map: "PK_beteiligter") @default(dbgenerated("newid()"), map: "DF_beteiligter_id") @db.UniqueIdentifier
+  typ_id                                    String          @db.UniqueIdentifier
+  akte_id                                   String?         @db.UniqueIdentifier
+  kontakt_id                                String          @db.UniqueIdentifier
+  vertreter_id                              String?         @db.UniqueIdentifier
+  aktenzeichen                              String?         @db.VarChar(12)
+  betreff_beteiligter                       String?         @db.VarChar(100)
+  betreff_vertreter                         String?         @db.VarChar(100)
+  ordner_id                                 String?         @db.VarChar(150)
+  schuldner                                 Boolean         @default(false, map: "DF_beteiligter_schuldner")
+  glaeubiger                                Boolean         @default(false, map: "DF_Table_1_glaubiger")
+  nahest_person                             Boolean         @default(false, map: "DF_beteiligter_nahest_person")
+  akte                                      akte?           @relation(fields: [akte_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_beteiligter_akte")
+  beteiligter_typ                           beteiligter_typ @relation(fields: [typ_id], references: [id], onUpdate: NoAction, map: "FK_beteiligter_beteiligter_typ")
+  kontakt_beteiligter_kontakt_idTokontakt   kontakt         @relation("beteiligter_kontakt_idTokontakt", fields: [kontakt_id], references: [id], onUpdate: NoAction, map: "FK_beteiligter_kontakt")
+  kontakt_beteiligter_vertreter_idTokontakt kontakt?        @relation("beteiligter_vertreter_idTokontakt", fields: [vertreter_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_beteiligter_kontakt1")
+}
+
+model beteiligter_typ {
+  id                    String           @id(map: "PK_beteiligter_typ") @default(dbgenerated("newid()"), map: "DF_beteiligter_typ_id") @db.UniqueIdentifier
+  bezeichnung           String           @db.VarChar(200)
+  beteiligter           beteiligter[]
+  beteiligter_typ       beteiligter_typ  @relation("beteiligter_typTobeteiligter_typ", fields: [id], references: [id], onUpdate: NoAction, map: "FK_beteiligter_typ_beteiligter_typ")
+  other_beteiligter_typ beteiligter_typ? @relation("beteiligter_typTobeteiligter_typ")
+}
+
+model kontakt {
+  id                                            String        @id(map: "PK_kontakt") @default(dbgenerated("newid()"), map: "DF_kontakt_id") @db.UniqueIdentifier
+  nachname                                      String?       @db.VarChar(50)
+  vorname                                       String?       @db.VarChar(50)
+  anrede                                        String?       @db.VarChar(15)
+  anschrift1                                    String?       @db.VarChar(50)
+  plz                                           String?       @db.VarChar(10)
+  ort                                           String?       @db.VarChar(50)
+  email                                         String?       @db.VarChar(50)
+  telefon                                       String?       @db.VarChar(50)
+  fax                                           String?       @db.VarChar(50)
+  beteiligter_beteiligter_kontakt_idTokontakt   beteiligter[] @relation("beteiligter_kontakt_idTokontakt")
+  beteiligter_beteiligter_vertreter_idTokontakt beteiligter[] @relation("beteiligter_vertreter_idTokontakt")
+}
+
+model team {
+  id                  String         @id(map: "PK_team") @default(dbgenerated("newid()"), map: "DF_Table_1_ID") @db.UniqueIdentifier
+  team_name           String         @db.VarChar(50)
+  verzeichnis_name    String?        @db.VarChar(50)
+  ordner_id           String?        @db.VarChar(200)
+  team_farbe          String?        @db.NChar(10)
+  textfarbe_akten     String?        @db.NChar(10)
+  prefix_aktenzeichen Int            @unique(map: "IX_team")
+  aktenschrank        aktenschrank[]
+}
