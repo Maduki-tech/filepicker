@@ -6,16 +6,30 @@ import { api } from '~/utils/api';
 export default function InputModal({
     setFiles,
     setModalOpen,
+    currentFolderId,
 }: {
     setFiles: () => void;
     setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    currentFolderId: string;
 }) {
     const [folderName, setFolderName] = useState('');
     const createFolder = api.fileManager.createFolder.useMutation();
+    const createFolderInside = api.fileManager.createFolderInside.useMutation();
 
     const create = async () => {
         if (folderName === '') return;
-        await createFolder.mutateAsync({ name: folderName });
+
+        if (currentFolderId) {
+            // Create a folder inside another folder
+            await createFolderInside.mutateAsync({
+                name: folderName,
+                parent_id: currentFolderId,
+            });
+        } else {
+            // Create a single folder
+            await createFolder.mutateAsync({ name: folderName });
+        }
+
         setFolderName(''); // Clear the folder name input field
         setFiles(); // Trigger the parent component to refetch the data
     };

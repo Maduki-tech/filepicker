@@ -45,6 +45,7 @@ export default function Index() {
                 <InputModal
                     setFiles={handleFolderCreate}
                     setModalOpen={setModalOpen}
+                    currentFolderId={currentFolderId}
                 />
             )}
             <div className="bg-white rounded shadow">
