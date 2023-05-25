@@ -4,17 +4,22 @@ import { CheckIcon } from '@heroicons/react/24/outline';
 import { api } from '~/utils/api';
 
 export default function InputModal({
+    setFiles,
     setModalOpen,
 }: {
+    setFiles: () => void;
     setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
     const [folderName, setFolderName] = useState('');
     const createFolder = api.fileManager.createFolder.useMutation();
-    const create = () => {
-        setModalOpen(false);
+
+    const create = async () => {
         if (folderName === '') return;
-        createFolder.mutate({ name: folderName });
+        await createFolder.mutateAsync({ name: folderName });
+        setFolderName(''); // Clear the folder name input field
+        setFiles(); // Trigger the parent component to refetch the data
     };
+
     return (
         <Transition.Root show={true} as={Fragment}>
             <Dialog as="div" className="relative z-10" onClose={setModalOpen}>

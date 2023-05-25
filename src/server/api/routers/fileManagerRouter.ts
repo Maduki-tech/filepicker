@@ -12,18 +12,25 @@ export const fileManagerRoute = createTRPCRouter({
     //   }),
 
     getFolder: publicProcedure.query(({ ctx }) => {
-        return ctx.prisma.folder.findMany();
-    }),
-    getFile: publicProcedure.query(({ ctx }) => {
-        return ctx.prisma.file.findMany();
+        return ctx.prisma.dateiablage.findMany({
+            include: {
+                dateiablage: true,
+                dateiablage_typ: true,
+            },
+        });
     }),
 
     createFolder: publicProcedure
         .input(z.object({ name: z.string() }))
         .mutation(({ input, ctx }) => {
-            return ctx.prisma.folder.create({
+            return ctx.prisma.dateiablage.create({
                 data: {
                     name: input.name,
+                    dateiablage_typ: {
+                        create: {
+                            bezeichnung: 'Folder',
+                        },
+                    },
                 },
             });
         }),

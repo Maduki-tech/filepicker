@@ -14,23 +14,22 @@ model Folder {
   parentID     Int?
   dateCreated  DateTime? @db.DateTime
   dateModified DateTime? @db.DateTime
-  children     Folder[]  @relation("FolderToFolder")
-  parent       Folder?   @relation("FolderToFolder", fields: [parentID], references: [folderID], onDelete: NoAction, onUpdate: NoAction)
   files        File[]    @relation("FolderToFile")
+  parent       Folder?   @relation("FolderToFolder", fields: [parentID], references: [folderID], onDelete: NoAction, onUpdate: NoAction)
+  children     Folder[]  @relation("FolderToFolder")
 }
 
 model File {
-  fileID       Int       @id @default(autoincrement())
-  name         String    @db.VarChar(40)
+  fileID         Int       @id @default(autoincrement())
+  name           String    @db.VarChar(40)
   parentFolderID Int?
-  size         Int?
-  type         String?
-  content      Bytes?
-  dateCreated  DateTime? @db.DateTime
-  dateModified DateTime? @db.DateTime
-  folder       Folder?   @relation("FolderToFile", fields: [parentFolderID], references: [folderID])
+  size           Int?
+  type           String?
+  content        Bytes?
+  dateCreated    DateTime? @db.DateTime
+  dateModified   DateTime? @db.DateTime
+  folder         Folder?   @relation("FolderToFile", fields: [parentFolderID], references: [folderID])
 }
-
 
 model akte {
   id                    String        @id(map: "PK_akte") @default(dbgenerated("newid()"), map: "DF_akte_id") @db.UniqueIdentifier
@@ -108,4 +107,35 @@ model team {
   textfarbe_akten     String?        @db.NChar(10)
   prefix_aktenzeichen Int            @unique(map: "IX_team")
   aktenschrank        aktenschrank[]
+}
+
+model dateiablage {
+  id                String           @id(map: "PK_dateiablage") @default(dbgenerated("newid()"), map: "DF_dateiablage_id") @db.UniqueIdentifier
+  parent_id         String?          @db.UniqueIdentifier
+  typ_id            String?          @db.UniqueIdentifier
+  referenz_id       String?          @db.UniqueIdentifier
+  name              String?          @db.VarChar(100)
+  size              Int?
+  content           Bytes?
+  date_created      DateTime         @default(now(), map: "DF_dateiablage_date_created") @db.DateTime
+  date_modified     DateTime         @default(now(), map: "DF_dateiablage_date_modified") @db.DateTime
+  dateiablage       dateiablage?     @relation("dateiablageTodateiablage", fields: [parent_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_dateiablage_dateiablage")
+  other_dateiablage dateiablage[]    @relation("dateiablageTodateiablage")
+  dateiablage_typ   dateiablage_typ? @relation(fields: [typ_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_dateiablage_dateiablage_typ")
+}
+
+model dateiablage_typ {
+  id          String        @id(map: "PK_dateiablage_typ") @default(dbgenerated("newid()"), map: "DF_dateiablage_typ_id") @db.UniqueIdentifier
+  bezeichnung String        @db.VarChar(50)
+  dateiablage dateiablage[]
+}
+
+model sysdiagrams {
+  name         String @db.NVarChar(128)
+  principal_id Int
+  diagram_id   Int    @id(map: "PK__sysdiagr__C2B05B61A0975439") @default(autoincrement())
+  version      Int?
+  definition   Bytes?
+
+  @@unique([principal_id, name], map: "UK_principal_name")
 }

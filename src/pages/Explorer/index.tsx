@@ -9,17 +9,25 @@ import { api } from '~/utils/api';
 
 export default function Index() {
     const [modalOpen, setModalOpen] = React.useState(false);
-    const { data } = api.fileManager.getFolder.useQuery();
+    const { data, refetch } = api.fileManager.getFolder.useQuery();
 
     const createFolder = () => {
         setModalOpen(!modalOpen);
+    };
+
+    const handleFolderCreate = () => {
+        setModalOpen(false);
+        refetch();
     };
 
     return (
         <>
             <Navbar />
             {modalOpen && (
-            <InputModal  setModalOpen={setModalOpen}/>
+                <InputModal
+                    setFiles={handleFolderCreate}
+                    setModalOpen={setModalOpen}
+                />
             )}
             <div className="bg-white rounded shadow">
                 <div className="flex items-center p-2 bg-blue-500 gap-2 text-white">

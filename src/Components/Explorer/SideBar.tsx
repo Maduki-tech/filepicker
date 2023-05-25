@@ -1,11 +1,19 @@
 import { BoltSlashIcon, FolderIcon } from '@heroicons/react/20/solid';
 import { data } from './fileData';
 import React, { useState } from 'react';
-import { Folder } from '@prisma/client';
+import { type dateiablage, type dateiablage_typ } from '@prisma/client';
 
-const Sidebar = ({ data }: { data: Folder[] }) => {
-    const [expandedItems, setExpandedItems] = useState<File[]>([]);
+type dateiablageProps = dateiablage & {
+    dateiablage: dateiablage;
+    dateiablage_typ: dateiablage_typ;
+};
 
+type SidebarProps = {
+    data: dateiablageProps[];
+};
+
+const Sidebar = ({ data }: SidebarProps) => {
+    const [expandedItems, setExpandedItems] = useState<dateiablage[]>([]);
     // handle the click on an item
     const handleItemClick = (index, datei) => {
         const file = data[index];
@@ -25,11 +33,12 @@ const Sidebar = ({ data }: { data: Folder[] }) => {
         }
     };
 
-    const renderFiles = (files) => {
+    const renderFiles = (files: dateiablageProps[]) => {
         if (!files) return null;
+        console.log(files);
         return files.map((file, index) => {
             const isExpanded = expandedItems.includes(index);
-            const isFolder = file.type === 'folder';
+            const isFolder = file.dateiablage_typ.bezeichnung === 'folder';
 
             return (
                 <div key={index}>
@@ -42,11 +51,8 @@ const Sidebar = ({ data }: { data: Folder[] }) => {
                         <FolderIcon className="h-5 w-5 mr-2" />
                         {file.name}
                     </div>
-                    {isFolder && isExpanded && (
-                        <div className="ml-4 mt-2">
-                            {renderFiles(file.children)}
-                        </div>
-                    )}
+                    {/* {isFolder && isExpanded && ( */}
+                    {/* )} */}
                 </div>
             );
         });
