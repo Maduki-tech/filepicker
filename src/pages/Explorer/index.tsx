@@ -1,23 +1,41 @@
 import { CloudArrowUpIcon, FolderPlusIcon } from '@heroicons/react/20/solid';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import MainContent from '~/Components/Explorer/Main';
 import InputModal from '~/Components/Explorer/ModalFolderName';
 import Sidebar from '~/Components/Explorer/SideBar';
 import Navbar from '~/Components/Navbar';
+import { BreadCrumbProps } from '~/types/Explorer';
 
 import { api } from '~/utils/api';
 
 export default function Index() {
-    const [modalOpen, setModalOpen] = React.useState(false);
-    const { data, refetch } = api.fileManager.getFolder.useQuery();
+    const [modalOpen, setModalOpen] = useState(false);
+    const [breadcrumb, setBreadcrumb] = useState<BreadCrumbProps[]>([
+        {
+            id: null,
+            name: 'Home',
+            current: true,
+        },
+    ]);
+    const [currentFolderId, setCurrentFolderId] = useState(null);
+    const [files, setFiles] = useState([]);
+    const { data, refetch } = api.fileManager.getFolder.useQuery({
+        id: currentFolderId,
+    });
+
+    useEffect(() => {
+        if (data) {
+            setFiles(data);
+        }
+    }, [data]);
 
     const createFolder = () => {
         setModalOpen(!modalOpen);
     };
 
-    const handleFolderCreate = () => {
+    const handleFolderCreate = async () => {
         setModalOpen(false);
-        refetch();
+        await refetch(); // Refetch the data after the folder creation is successful
     };
 
     return (
@@ -43,10 +61,19 @@ export default function Index() {
                 </div>
                 <div className="flex">
                     <div className="w-1/4 border-r">
-                        <Sidebar data={data} />
+                        <Sidebar
+                            data={files}
+                            onSelectFolder={setCurrentFolderId}
+                        />
                     </div>
                     <div className="w-3/4">
-                        {/* <MainContent data={data}/> */}
+                        <MainContent
+                            data={data}
+                            currentFolderId={currentFolderId}
+                            setCurrentFolderId={setCurrentFolderId}
+                            breadcrumb={breadcrumb}
+                            setBreadcrumb={setBreadcrumb}
+                        />
                     </div>
                 </div>
             </div>

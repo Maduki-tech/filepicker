@@ -1,32 +1,189 @@
-import React from 'react';
+import {
+    ChevronDownIcon,
+    FolderIcon,
+    HomeIcon,
+} from '@heroicons/react/20/solid';
+import React, { useState } from 'react';
+import { BreadCrumbProps, dataProps, dateiablageProps } from '~/types/Explorer';
 
-const MainContent = () => {
-  return (
-    <div className="flex-1 p-4">
-      <h2 className="text-2xl font-bold mb-4">Files</h2>
-      <ul className="space-y-2">
-        <li>
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M2 5a2 2 0 012-2h4.586a1 1 0 01.707.293l2.414 2.414A1 1 0 0112 6.414V9h5a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm2-2a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V7.414a1 1 0 01-.293.707l-2.414 2.414A1 1 0 0112 10H4a2 2 0 00-2 2v6a1 1 0 001 1h14a1 1 0 001-1V3a1 1 0 00-1-1H4z" clipRule="evenodd" />
-          </svg>
-          Document.txt
-        </li>
-        <li>
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M7 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v9a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2V3a1 1 0 00-1-1H7zm0 2h6v1H7V4zm0 3h6v1H7V7zm0 3h6v1H7v-1zm0 3h4v1H7v-1zm0 3h4v1H7v-1zm6-6h1v6h-1V7zm-3 6h1v-3h-1v3zm-3 0h1v-3H7v3z" clipRule="evenodd" />
-          </svg>
-          Image.jpg
-        </li>
-        <li>
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M11.707 3.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 9H3a1 1 0 010-2h11.586l-3.293-3.293a1 1 0 010-1.414z" clipRule="evenodd" />
-          </svg>
-          Video.mp4
-        </li>
-      </ul>
-    </div>
-  );
+type MainProps = {
+    data: dateiablageProps[];
+    currentFolderId: string | null;
+    setCurrentFolderId: (folderId: string | null) => void;
+    breadcrumb: BreadCrumbProps[];
+    setBreadcrumb: React.Dispatch<React.SetStateAction<BreadCrumbProps[]>>;
 };
 
-export default MainContent;
+const MainContent = ({
+    data,
+    currentFolderId,
+    setCurrentFolderId,
+    breadcrumb,
+    setBreadcrumb,
+}: MainProps) => {
+    // Handle click on folder
+    const handleFolderClick = (fileName: string, folderId: string) => {
+        console.log('folderId', folderId);
+        console.log('folderName', fileName);
+        setCurrentFolderId(folderId); // Update the current folder ID state
+        setBreadcrumb((prev) => {
+            // Update the breadcrumb state
+            const index = prev.findIndex((item) => item.id === folderId);
+            if (index === -1) {
+                return [
+                    ...prev,
+                    {
+                        id: folderId,
+                        name: fileName,
+                        current: true,
+                    },
+                ];
+            }
+            return prev.slice(0, index + 1);
+        });
+    };
 
+    // Render all the files in the current folder
+    const renderFiles = (files: dateiablageProps[]) => {
+        if (!files) return null;
+        return files.map((file) => (
+            <tr
+                key={file.id}
+                className="hover:bg-blue-100 hover:cursor-pointer"
+                onClick={() => handleFolderClick(file.name, file.id)}
+            >
+                <td className="whitespace-nowrap flex py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                    <FolderIcon className="h-5 w-5 mr-2" />
+                    {file.name}
+                </td>
+                <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                    0
+                </td>
+                <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                    {file.date_created.toLocaleString('de-DE', {
+                        timeZone: 'Europe/Berlin',
+                    })}
+                </td>
+            </tr>
+        ));
+    };
+
+    return (
+        <div className="px-4 sm:px-6 lg:px-8">
+            <Breadcrumb crumbs={breadcrumb} setFolderId={handleFolderClick} />
+            <div className="flow-root">
+                <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                    <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                        <table className="min-w-full divide-y divide-gray-300">
+                            <thead>
+                                <tr>
+                                    <th
+                                        scope="col"
+                                        className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                                    >
+                                        <button className="group inline-flex">
+                                            Name
+                                            <span className="invisible ml-2 flex-none rounded text-gray-400 group-hover:visible group-focus:visible">
+                                                <ChevronDownIcon
+                                                    className="h-5 w-5"
+                                                    aria-hidden="true"
+                                                />
+                                            </span>
+                                        </button>
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                    >
+                                        <span>Größe</span>
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                    >
+                                        <span>Erstellt am</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200 bg-white">
+                                {renderFiles(data)}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+function Breadcrumb({
+    crumbs,
+    setFolderId,
+}: {
+    crumbs: BreadCrumbProps[];
+    setFolderId: (folderName: string, folderId: string) => void;
+}) {
+    return (
+        <nav className="flex mt-2" aria-label="Breadcrumb">
+            <ol
+                role="list"
+                className="flex space-x-4 rounded-md bg-white px-6 shadow"
+            >
+                {crumbs.map((crumb) => (
+                    <>
+                        {crumb.name !== 'Home' ? (
+                            <li
+                                key={crumb.id}
+                                className="flex hover:cursor-pointer"
+                            >
+                                <div className="flex items-center">
+                                    <svg
+                                        className="h-full w-6 flex-shrink-0 text-gray-200"
+                                        viewBox="0 0 24 44"
+                                        preserveAspectRatio="none"
+                                        fill="currentColor"
+                                        aria-hidden="true"
+                                    >
+                                        <path d="M.293 0l22 22-22 22h1.414l22-22-22-22H.293z" />
+                                    </svg>
+                                    <span
+                                        className="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700 hover:cursor-pointer"
+                                        onClick={() =>
+                                            setFolderId(
+                                                crumb.name.toString(),
+                                                crumb.id
+                                            )
+                                        }
+                                    >
+                                        {crumb.name.toString()}
+                                    </span>
+                                </div>
+                            </li>
+                        ) : (
+                            <li className="flex h-[44px]">
+                                <div className="flex items-center">
+                                    <span
+                                        className="text-sm font-medium text-gray-500 hover:text-gray-700 hover:cursor-pointer"
+                                        onClick={() =>
+                                            setFolderId(
+                                                crumb.name.toString(),
+                                                crumb.id
+                                            )
+                                        }
+                                    >
+                                        <HomeIcon
+                                            className="h-5 w-5 flex-shrink-0"
+                                            aria-hidden="true"
+                                        />
+                                    </span>
+                                </div>
+                            </li>
+                        )}
+                    </>
+                ))}
+            </ol>
+        </nav>
+    );
+}
+
+export default MainContent;
