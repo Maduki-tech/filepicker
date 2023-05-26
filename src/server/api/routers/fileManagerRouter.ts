@@ -50,4 +50,16 @@ export const fileManagerRoute = createTRPCRouter({
                 },
             });
         }),
+
+    getAkten: publicProcedure
+        .input(z.object({ name: z.string().optional().nullable() }))
+        .query(({ input, ctx }) => {
+            return ctx.prisma.akte.findMany({
+                where: {
+                    aktenname: {
+                        contains: input.name ? input.name : undefined,
+                    },
+                },
+            });
+        }),
 });
