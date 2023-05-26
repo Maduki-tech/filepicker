@@ -31,6 +31,7 @@ export default function Index() {
 
     const createFolder = () => {
         setModalOpen(!modalOpen);
+        // Test
     };
 
     const handleFolderCreate = async () => {
