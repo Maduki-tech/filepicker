@@ -1,55 +1,61 @@
-import { Disclosure } from '@headlessui/react';
-import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import { UserButton, useUser } from '@clerk/nextjs';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 export default function Navbar() {
     const { user, isSignedIn } = useUser();
+    const router = useRouter();
+
     return (
-        <Disclosure as="header" className="bg-white shadow">
-            <>
-                <div className="mx-auto max-w-full px-2 sm:px-4 lg:divide-y lg:divide-gray-200 lg:px-8">
-                    <div className="relative flex h-16 justify-between">
-                        <div className="relative z-10 flex px-2 lg:px-0">
-                            <div className="flex flex-shrink-0 items-center">
-                                <h1 className="font-bold text-2xl text-blue-600">
-                                    Flox
-                                </h1>
-                            </div>
+        <>
+            <div className="mx-auto px-2 sm:px-6 lg:px-8 shadow">
+                <div className="relative flex h-16 justify-between">
+                    <div className="flex flex-1 items-center justify-evenly sm:items-stretch sm:justify-start">
+                        <div className="flex flex-shrink-0 items-center">
+                            <img
+                                className="block h-8 w-auto lg:hidden"
+                                src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+                                alt="Your Company"
+                            />
+                            <img
+                                className="hidden h-8 w-auto lg:block"
+                                src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+                                alt="Your Company"
+                            />
                         </div>
-                        <div className="relative z-0 flex flex-1 items-center justify-center px-2 sm:absolute sm:inset-0">
-                            <div className="w-full sm:max-w-xs">
-                                <label htmlFor="search" className="sr-only">
-                                    Search
-                                </label>
-                                <div className="relative">
-                                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                        <MagnifyingGlassIcon
-                                            className="h-5 w-5 text-gray-400"
-                                            aria-hidden="true"
-                                        />
-                                    </div>
-                                    <input
-                                        id="search"
-                                        name="search"
-                                        className="block w-full rounded-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                        placeholder="Search"
-                                        type="search"
-                                    />
-                                </div>
-                            </div>
-                            <div className="lg:hidden">
-                                <UserButton afterSignOutUrl="/" />
-                            </div>
-                        </div>
-                        <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:gap-2 lg:flex lg:items-center">
-                            {isSignedIn && (
-                                <span>Willkommen, {user?.username}</span>
-                            )}
-                            <UserButton afterSignOutUrl="/" />
+                        <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+                            <Link
+                                href="/"
+                                className={`inline-flex items-center border-b-2 ${
+                                    router.pathname === '/'
+                                        ? 'border-indigo-500'
+                                        : 'border-transparent'
+                                } border-indigo-500 px-1 pt-1 text-sm font-medium text-gray-900`}
+                            >
+                                Einstieg
+                            </Link>
+                            <Link
+                                href="/Explorer"
+                                className={`inline-flex items-center border-b-2 ${
+                                    router.pathname === '/Explorer'
+                                        ? 'border-indigo-500'
+                                        : 'border-transparent'
+                                } border-indigo-500 px-1 pt-1 text-sm font-medium text-gray-900`}
+                            >
+                                Explorer
+                            </Link>
                         </div>
                     </div>
+                    <div className="absolute inset-y-0 right-0 gap-2 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                        {isSignedIn && (
+                            <span className="mr-2">
+                                Willkommen, {user?.username}
+                            </span>
+                        )}
+                        <UserButton afterSignOutUrl="/" />
+                    </div>
                 </div>
-            </>
-        </Disclosure>
+            </div>
+        </>
     );
 }

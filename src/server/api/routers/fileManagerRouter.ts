@@ -62,4 +62,44 @@ export const fileManagerRoute = createTRPCRouter({
                 },
             });
         }),
+    getAkteById: publicProcedure
+        .input(z.object({ id: z.string().optional().nullable() }))
+        .query(({ input, ctx }) => {
+            return ctx.prisma.akte.findFirst({
+                where: {
+                    id: input.id ? input.id : undefined,
+                },
+            });
+        }),
+
+    getAktenschrankByID: publicProcedure
+        .input(z.object({ id: z.string().optional().nullable() }))
+        .query(({ input, ctx }) => {
+            return ctx.prisma.aktenschrank.findFirst({
+                where: {
+                    id: input.id ? input.id : undefined,
+                },
+            });
+        }),
+    moveFolder: publicProcedure
+        .input(
+            z.object({
+                id: z.string(),
+                parent_id: z.string(),
+            })
+        )
+        .mutation(({ input, ctx }) => {
+            return ctx.prisma.dateiablage.update({
+                where: {
+                    id: input.id,
+                },
+                data: {
+                    other_dateiablage: {
+                        connect: {
+                            id: input.parent_id ? input.parent_id : undefined,
+                        },
+                    },
+                },
+            });
+        }),
 });

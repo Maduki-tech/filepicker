@@ -1,13 +1,17 @@
-import { CloudArrowUpIcon, FolderPlusIcon, ArrowPathIcon} from '@heroicons/react/20/solid';
+import { CloudArrowUpIcon, FolderPlusIcon } from '@heroicons/react/20/solid';
+import { akte } from '@prisma/client';
+import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import MainContent from '~/Components/Explorer/Main';
-import InputModal from '~/Components/Explorer/Modals/ModalFolderName';
+import InputModal from '~/Components/Explorer/ModalFolderName';
 import Sidebar from '~/Components/Explorer/SideBar';
 import { BreadCrumbProps } from '~/types/Explorer';
 
 import { api } from '~/utils/api';
 
 export default function Index() {
+    const router = useRouter();
+    console.log(router.query.id);
 
     const [modalOpen, setModalOpen] = useState(false);
     const [breadcrumb, setBreadcrumb] = useState<BreadCrumbProps[]>([
@@ -18,28 +22,39 @@ export default function Index() {
         },
     ]);
     const [currentFolderId, setCurrentFolderId] = useState(null);
-    const [files, setFiles] = useState([]);
+    const [files, setFiles] = useState<akte>();
     const { data, refetch } = api.fileManager.getFolder.useQuery({
         id: currentFolderId,
     });
+    // const akte = api.fileManager.getAkteById.useQuery({
+    //     id: router.query.id.toString(),
+    // });
+    //
+    // const aktenName = akte.data.aktenname;
+    // const aktenSchrankID = akte.data.aktenschrank_id;
+    //
+    // const aktenschrank = api.fileManager.getAktenschrankByID.useQuery({
+    //     id: aktenSchrankID,
+    // });
+
+
+    
 
     useEffect(() => {
         if (data) {
             setFiles(data);
         }
+        console.log(data);
     }, [data]);
 
     const createFolder = () => {
         setModalOpen(!modalOpen);
+        // Test
     };
 
     const handleFolderCreate = async () => {
         setModalOpen(false);
         await refetch(); // Refetch the data after the folder creation is successful
-    };
-
-    const handleRefetch = async () => {
-        await refetch();
     };
 
     return (
@@ -53,7 +68,7 @@ export default function Index() {
             )}
             <div className="bg-white rounded shadow">
                 <div className="flex items-center p-2 bg-blue-500 gap-2 text-white">
-                    <span>File Explorer</span>
+                    <span>File Explorer route </span>
                     <ToolbarButton
                         icon={<CloudArrowUpIcon className="h-5 w-5" />}
                         onClick={() => {}}
@@ -61,10 +76,6 @@ export default function Index() {
                     <ToolbarButton
                         icon={<FolderPlusIcon className="h-5 w-5" />}
                         onClick={() => createFolder()}
-                    />
-                    <ToolbarButton
-                        icon={<ArrowPathIcon className="h-5 w-5" />}
-                        onClick={() => handleRefetch()}
                     />
                 </div>
                 <div className="flex">

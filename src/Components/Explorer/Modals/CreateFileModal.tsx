@@ -3,12 +3,10 @@ import { Dialog, Transition } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/24/outline';
 import { api } from '~/utils/api';
 
-export default function InputModal({
-    setFiles,
+export default function CreateFileModal({
     setModalOpen,
     currentFolderId,
 }: {
-    setFiles: () => void;
     setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
     currentFolderId: string;
 }) {
@@ -20,18 +18,18 @@ export default function InputModal({
         if (folderName === '') return;
 
         if (currentFolderId) {
+        console.log(currentFolderId);
             // Create a folder inside another folder
-            await createFolderInside.mutateAsync({
-                name: folderName,
-                parent_id: currentFolderId,
-            });
+            // await createFolderInside.mutateAsync({
+            //     name: folderName,
+            //     parent_id: currentFolderId,
+            // });
         } else {
             // Create a single folder
-            await createFolder.mutateAsync({ name: folderName });
+            // await createFolder.mutateAsync({ name: folderName });
         }
 
         setFolderName(''); // Clear the folder name input field
-        setFiles(); // Trigger the parent component to refetch the data
     };
 
     return (

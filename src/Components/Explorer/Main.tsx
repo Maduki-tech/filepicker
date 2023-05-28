@@ -3,8 +3,11 @@ import {
     FolderIcon,
     HomeIcon,
 } from '@heroicons/react/20/solid';
-import React, { useState } from 'react';
-import { BreadCrumbProps, dataProps, dateiablageProps } from '~/types/Explorer';
+import React, { useEffect, useState } from 'react';
+import { BreadCrumbProps, dateiablageProps } from '~/types/Explorer';
+import Menu from '../ContextMenu/Menu';
+import MoveFileModal from './Modals/MoveFileModal';
+import CreateFileModal from './Modals/MoveFileModal';
 
 type MainProps = {
     data: dateiablageProps[];
@@ -12,6 +15,13 @@ type MainProps = {
     setCurrentFolderId: (folderId: string | null) => void;
     breadcrumb: BreadCrumbProps[];
     setBreadcrumb: React.Dispatch<React.SetStateAction<BreadCrumbProps[]>>;
+};
+
+type ContextMenuProps = {
+    show: boolean;
+    x: number;
+    y: number;
+    currentFile: dateiablageProps | null;
 };
 
 const MainContent = ({
@@ -22,9 +32,19 @@ const MainContent = ({
     setBreadcrumb,
 }: MainProps) => {
     // Handle click on folder
+
+    const [contextMenu, setContextMenu] = useState({
+        show: false,
+        x: 0,
+        y: 0,
+        currentFile: null,
+    });
+
+    const [createFileModal, setCreateFileModal] = useState(false);
+    const [moveFileModal, setMoveFileModal] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
+
     const handleFolderClick = (fileName: string, folderId: string) => {
-        console.log('folderId', folderId);
-        console.log('folderName', fileName);
         setCurrentFolderId(folderId); // Update the current folder ID state
         setBreadcrumb((prev) => {
             // Update the breadcrumb state
@@ -43,12 +63,55 @@ const MainContent = ({
         });
     };
 
+    const handleContextMenu = (e: React.MouseEvent, file: dateiablageProps) => {
+        e.preventDefault();
+        setContextMenu({
+            show: true,
+            x: e.pageX,
+            y: e.pageY,
+            currentFile: file,
+        });
+    };
+
+    // handle when selecting an action
+    const contextMenuClose = (e, action, file) => {
+        setContextMenu({ show: false, x: 0, y: 0, currentFile: null });
+        setSelectedFile(file);
+
+        switch (action) {
+            case 'Verschieben':
+                setMoveFileModal(true);
+                break;
+            case 'Löschen':
+                console.log('Löschen');
+                break;
+            case 'Erstellen':
+                setCreateFileModal(true);
+                break;
+            case 'Umbenennen':
+                setCreateFileModal(true);
+                break;
+            default:
+                break;
+        }
+    };
+
+    const handleModalClose = () => {
+        setCreateFileModal(false);
+        setMoveFileModal(false);
+    };
+
+    const closeContextMenuOutside = () => {
+        setContextMenu({ show: false, x: 0, y: 0, currentFile: null });
+    };
+
     // Render all the files in the current folder
     const renderFiles = (files: dateiablageProps[]) => {
         if (!files) return null;
         return files.map((file) => (
             <tr
                 key={file.id}
+                onContextMenu={(e) => handleContextMenu(e, file)}
                 className="hover:bg-blue-100 hover:cursor-pointer"
                 onClick={() => handleFolderClick(file.name, file.id)}
             >
@@ -71,6 +134,29 @@ const MainContent = ({
     return (
         <div className="px-4 sm:px-6 lg:px-8">
             <Breadcrumb crumbs={breadcrumb} setFolderId={handleFolderClick} />
+            {contextMenu.show && (
+                <Menu
+                    closeContextMenu={contextMenuClose}
+                    x={contextMenu.x}
+                    y={contextMenu.y}
+                    currentFile={contextMenu.currentFile}
+                    closeContextMenuOutside={closeContextMenuOutside}
+                />
+            )}
+
+            {createFileModal && (
+                <CreateFileModal
+                    setModalOpen={handleModalClose}
+                    currentFolder={selectedFile}
+                />
+            )}
+            {moveFileModal && (
+                <MoveFileModal
+                    setModalOpen={handleModalClose}
+                    currentFolder={selectedFile}
+                />
+            )}
+
             <div className="flow-root">
                 <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                     <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -129,8 +215,8 @@ function Breadcrumb({
                 role="list"
                 className="flex space-x-4 rounded-md bg-white px-6 shadow"
             >
-                {crumbs.map((crumb) => (
-                    <>
+                {crumbs.map((crumb, idx) => (
+                    <div key={idx}>
                         {crumb.name !== 'Home' ? (
                             <li
                                 key={crumb.id}
@@ -179,7 +265,7 @@ function Breadcrumb({
                                 </div>
                             </li>
                         )}
-                    </>
+                    </div>
                 ))}
             </ol>
         </nav>

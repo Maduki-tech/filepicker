@@ -1,7 +1,8 @@
 import { Menu, Transition } from '@headlessui/react';
 import { EllipsisVerticalIcon } from '@heroicons/react/20/solid';
 import { akte } from '@prisma/client';
-import { Fragment } from 'react';
+import Link from 'next/link';
+import { Fragment, useEffect, useState } from 'react';
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ');
@@ -13,8 +14,13 @@ const statuses = {
     Archived: 'text-yellow-800 bg-yellow-50 ring-yellow-600/20',
 };
 
-export default function ItemList({ data }: { data: akte[] }) {
-    console.log(data)
+export default function ItemList({
+    data,
+    pageLength,
+}: {
+    data: akte[];
+    pageLength: number;
+}) {
     return (
         <ul role="list" className="divide-y divide-gray-100">
             {data?.length > 0 || data !== undefined ? (
@@ -29,18 +35,10 @@ export default function ItemList({ data }: { data: akte[] }) {
                                     <p className="text-sm font-semibold leading-6 text-gray-900">
                                         {akte.aktenname}
                                     </p>
-                                    <p
-                                        className={classNames(
-                                            statuses[akte.sachbearbeiter],
-                                            'rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset'
-                                        )}
-                                    >
-                                        {akte.sachbearbeiter}
-                                    </p>
                                 </div>
                                 <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
                                     <p className="whitespace-nowrap">
-                                        Due on{' '}
+                                        Erstellt am{' '}
                                         <time
                                             dateTime={akte.angelegt_am.toLocaleDateString()}
                                         >
@@ -54,25 +52,22 @@ export default function ItemList({ data }: { data: akte[] }) {
                                         <circle cx={1} cy={1} r={1} />
                                     </svg>
                                     <p className="truncate">
-                                        Created by {akte.createdBy}
+                                        Erstellt von {akte.angelegt_von}
                                     </p>
                                 </div>
                             </div>
                             <div className="flex flex-none items-center gap-x-4">
-                                <a
-                                    href={akte.href}
+                                <Link
+                                    href={{
+                                        pathname: '/Explorer/[id]',
+                                        query: { id: akte.id },
+                                    }}
                                     className="hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:block"
                                 >
-                                    View project
-                                    <span className="sr-only">
-                                        , {akte.name}
-                                    </span>
-                                </a>
+                                    Akte öffnen
+                                </Link>
                                 <Menu as="div" className="relative flex-none">
                                     <Menu.Button className="-m-2.5 block p-2.5 text-gray-500 hover:text-gray-900">
-                                        <span className="sr-only">
-                                            Open options
-                                        </span>
                                         <EllipsisVerticalIcon
                                             className="h-5 w-5"
                                             aria-hidden="true"
@@ -99,10 +94,7 @@ export default function ItemList({ data }: { data: akte[] }) {
                                                             'block px-3 py-1 text-sm leading-6 text-gray-900'
                                                         )}
                                                     >
-                                                        Edit
-                                                        <span className="sr-only">
-                                                            , {akte.name}
-                                                        </span>
+                                                        Bearbeiten
                                                     </a>
                                                 )}
                                             </Menu.Item>
@@ -117,28 +109,7 @@ export default function ItemList({ data }: { data: akte[] }) {
                                                             'block px-3 py-1 text-sm leading-6 text-gray-900'
                                                         )}
                                                     >
-                                                        Move
-                                                        <span className="sr-only">
-                                                            , {akte.name}
-                                                        </span>
-                                                    </a>
-                                                )}
-                                            </Menu.Item>
-                                            <Menu.Item>
-                                                {({ active }) => (
-                                                    <a
-                                                        href="#"
-                                                        className={classNames(
-                                                            active
-                                                                ? 'bg-gray-50'
-                                                                : '',
-                                                            'block px-3 py-1 text-sm leading-6 text-gray-900'
-                                                        )}
-                                                    >
-                                                        Delete
-                                                        <span className="sr-only">
-                                                            , {akte.name}
-                                                        </span>
+                                                        Löschen
                                                     </a>
                                                 )}
                                             </Menu.Item>
