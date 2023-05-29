@@ -8,6 +8,10 @@ import { BreadCrumbProps, dateiablageProps } from '~/types/Explorer';
 import Menu from '../ContextMenu/Menu';
 import MoveFileModal from './Modals/MoveFileModal';
 import CreateFileModal from './Modals/MoveFileModal';
+import InputModal from './Modals/ModalFolderName';
+import { dateiablage } from '@prisma/client';
+import DeleteFileModal from './Modals/DeleteFileModal';
+import RenameFileModal from './Modals/RenameModal';
 
 type MainProps = {
     data: dateiablageProps[];
@@ -42,7 +46,9 @@ const MainContent = ({
 
     const [createFileModal, setCreateFileModal] = useState(false);
     const [moveFileModal, setMoveFileModal] = useState(false);
-    const [selectedFile, setSelectedFile] = useState(null);
+    const [deleteFileModal, setDeleteFileModal] = useState(false);
+    const [renameFileModal, setRenameFileModal] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<dateiablage>(null);
 
     const handleFolderClick = (fileName: string, folderId: string) => {
         setCurrentFolderId(folderId); // Update the current folder ID state
@@ -83,13 +89,13 @@ const MainContent = ({
                 setMoveFileModal(true);
                 break;
             case 'Löschen':
-                console.log('Löschen');
+                setDeleteFileModal(true);
                 break;
             case 'Erstellen':
                 setCreateFileModal(true);
                 break;
             case 'Umbenennen':
-                setCreateFileModal(true);
+                setRenameFileModal(true);
                 break;
             default:
                 break;
@@ -99,6 +105,8 @@ const MainContent = ({
     const handleModalClose = () => {
         setCreateFileModal(false);
         setMoveFileModal(false);
+        setDeleteFileModal(false);
+        setRenameFileModal(false);
     };
 
     const closeContextMenuOutside = () => {
@@ -145,13 +153,25 @@ const MainContent = ({
             )}
 
             {createFileModal && (
-                <CreateFileModal
+                <InputModal
                     setModalOpen={handleModalClose}
-                    currentFolder={selectedFile}
+                    currentFolderId={currentFolderId}
                 />
             )}
             {moveFileModal && (
                 <MoveFileModal
+                    setModalOpen={handleModalClose}
+                    currentFolder={selectedFile}
+                />
+            )}
+            {deleteFileModal && (
+                <DeleteFileModal
+                    setModalOpen={handleModalClose}
+                    currentFolder={selectedFile}
+                />
+            )}
+            {renameFileModal && (
+                <RenameFileModal
                     setModalOpen={handleModalClose}
                     currentFolder={selectedFile}
                 />

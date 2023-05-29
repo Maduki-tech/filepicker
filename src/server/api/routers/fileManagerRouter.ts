@@ -33,12 +33,12 @@ export const fileManagerRoute = createTRPCRouter({
         }),
 
     createFolderInside: publicProcedure
-        .input(z.object({ name: z.string(), parent_id: z.string() }))
+        .input(z.object({ name: z.string(), parent_id: z.string().nullable() }))
         .mutation(({ input, ctx }) => {
             return ctx.prisma.dateiablage.create({
                 data: {
                     name: input.name,
-                    parent_id: input.parent_id,
+                    parent_id: input.parent_id ? input.parent_id : null,
                 },
             });
         }),
@@ -91,6 +91,28 @@ export const fileManagerRoute = createTRPCRouter({
                             id: input.parent_id ? input.parent_id : undefined,
                         },
                     },
+                },
+            });
+        }),
+
+    deleteFolder: publicProcedure
+        .input(z.object({ id: z.string() }))
+        .mutation(({ input, ctx }) => {
+            return ctx.prisma.dateiablage.delete({
+                where: {
+                    id: input.id,
+                },
+            });
+        }),
+    renameFolder: publicProcedure
+        .input(z.object({ id: z.string(), name: z.string() }))
+        .mutation(({ input, ctx }) => {
+            return ctx.prisma.dateiablage.update({
+                where: {
+                    id: input.id,
+                },
+                data: {
+                    name: input.name,
                 },
             });
         }),

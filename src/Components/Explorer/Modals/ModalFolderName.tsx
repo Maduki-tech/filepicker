@@ -8,7 +8,7 @@ export default function InputModal({
     setModalOpen,
     currentFolderId,
 }: {
-    setFiles: () => void;
+    setFiles?: () => void;
     setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
     currentFolderId: string;
 }) {
@@ -19,20 +19,17 @@ export default function InputModal({
     const create = async () => {
         if (folderName === '') return;
 
-        if (currentFolderId) {
-            // Create a folder inside another folder
-            console.log(currentFolderId);
-            await createFolderInside.mutateAsync({
-                name: folderName,
-                parent_id: currentFolderId,
-            });
-        } else {
-            // Create a single folder
-            // await createFolder.mutateAsync({ name: folderName });
-        }
+        // Create a folder inside another folder
+        console.log(currentFolderId);
+        await createFolderInside.mutateAsync({
+            name: folderName,
+            parent_id: currentFolderId,
+        });
+        // Create a single folder
+        // await createFolder.mutateAsync({ name: folderName });
 
         setFolderName(''); // Clear the folder name input field
-        setFiles(); // Trigger the parent component to refetch the data
+        if (setFiles) setFiles(); // Trigger the parent component to refetch the data
     };
 
     return (

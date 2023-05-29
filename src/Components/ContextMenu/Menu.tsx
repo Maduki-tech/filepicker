@@ -39,7 +39,11 @@ export default function Menu({
 }: {
     x: number;
     y: number;
-    closeContextMenu: (event: React.MouseEvent<HTMLLIElement, MouseEvent> , action: string, file: dateiablageProps | null) => void;
+    closeContextMenu: (
+        event: React.MouseEvent<HTMLLIElement, MouseEvent>,
+        action: string,
+        file: dateiablageProps | null
+    ) => void;
     closeContextMenuOutside: () => void;
     currentFile: dateiablageProps | null;
 }) {
@@ -59,7 +63,7 @@ export default function Menu({
                 <ul role="list" className="">
                     {navigation.map((item) => (
                         <li
-                            onClick={(event) => 
+                            onClick={(event) =>
                                 closeContextMenu(event, item.name, currentFile)
                             }
                             className="flex justify-between items-center p-2 pl-3 hover:text-indigo-600 hover:bg-gray-50 "
