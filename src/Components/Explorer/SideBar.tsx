@@ -1,10 +1,9 @@
-import { ChevronDownIcon, FolderIcon } from '@heroicons/react/20/solid';
-import { dateiablage } from '@prisma/client';
+import { FolderIcon } from '@heroicons/react/20/solid';
 import React from 'react';
 import { BreadCrumbProps, dataProps, dateiablageProps } from '~/types/Explorer';
 
 type SidebarProps = {
-    data: dataProps;
+    data: dataProps[];
     onSelectFolder: React.Dispatch<any>;
     breadcrumb: BreadCrumbProps[];
     setBreadcrumb: React.Dispatch<React.SetStateAction<BreadCrumbProps[]>>;
@@ -64,7 +63,7 @@ const Sidebar = ({
         }
     };
     const renderFiles = (
-        files: dateiablageProps[] | dateiablageProps['other_dateiablage']
+        files: dateiablageProps[] | dateiablageProps['other_dateiablage'] | dataProps[]
     ) => {
         if (!files) return null;
         return files.map((file) => (

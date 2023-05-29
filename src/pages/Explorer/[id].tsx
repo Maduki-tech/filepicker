@@ -3,7 +3,7 @@ import { akte } from '@prisma/client';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import MainContent from '~/Components/Explorer/Main';
-import InputModal from '~/Components/Explorer/ModalFolderName';
+import InputModal from '~/Components/Explorer/Modals/ModalFolderName';
 import Sidebar from '~/Components/Explorer/SideBar';
 import { BreadCrumbProps } from '~/types/Explorer';
 
@@ -22,7 +22,7 @@ export default function Index() {
         },
     ]);
     const [currentFolderId, setCurrentFolderId] = useState(null);
-    const [files, setFiles] = useState<akte>();
+    const [files, setFiles] = useState();
     const { data, refetch } = api.fileManager.getFolder.useQuery({
         id: currentFolderId,
     });
@@ -40,12 +40,12 @@ export default function Index() {
 
     
 
-    useEffect(() => {
-        if (data) {
-            setFiles(data);
-        }
-        console.log(data);
-    }, [data]);
+    // useEffect(() => {
+    //     if (data) {
+    //         setFiles(data);
+    //     }
+    //     console.log(data);
+    // }, [data]);
 
     const createFolder = () => {
         setModalOpen(!modalOpen);
@@ -83,6 +83,8 @@ export default function Index() {
                         <Sidebar
                             data={files}
                             onSelectFolder={setCurrentFolderId}
+                            breadcrumb={breadcrumb}
+                            setBreadcrumb={setBreadcrumb}
                         />
                     </div>
                     <div className="w-3/4">
