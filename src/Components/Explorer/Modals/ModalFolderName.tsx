@@ -22,10 +22,10 @@ export default function InputModal({
         if (currentFolderId) {
             // Create a folder inside another folder
             console.log(currentFolderId);
-            // await createFolderInside.mutateAsync({
-            //     name: folderName,
-            //     parent_id: currentFolderId,
-            // });
+            await createFolderInside.mutateAsync({
+                name: folderName,
+                parent_id: currentFolderId,
+            });
         } else {
             // Create a single folder
             // await createFolder.mutateAsync({ name: folderName });

@@ -3,6 +3,7 @@ import { type dateiablage, type dateiablage_typ } from '@prisma/client';
 export type dateiablageProps = dateiablage & {
     dateiablage: dateiablage;
     dateiablage_typ: dateiablage_typ;
+    other_dateiablage: dateiablage[];
 };
 
 export type dataProps = {

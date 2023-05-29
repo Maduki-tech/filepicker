@@ -1,4 +1,4 @@
-import { CloudArrowUpIcon, FolderPlusIcon, ArrowPathIcon} from '@heroicons/react/20/solid';
+import { FolderPlusIcon, ArrowPathIcon } from '@heroicons/react/20/solid';
 import React, { useEffect, useState } from 'react';
 import MainContent from '~/Components/Explorer/Main';
 import InputModal from '~/Components/Explorer/Modals/ModalFolderName';
@@ -7,8 +7,13 @@ import { BreadCrumbProps } from '~/types/Explorer';
 
 import { api } from '~/utils/api';
 
-export default function Index() {
+type FileProps = {
+    name: string;
+    size: number;
+    content: string;
+};
 
+export default function Index() {
     const [modalOpen, setModalOpen] = useState(false);
     const [breadcrumb, setBreadcrumb] = useState<BreadCrumbProps[]>([
         {
@@ -19,15 +24,18 @@ export default function Index() {
     ]);
     const [currentFolderId, setCurrentFolderId] = useState(null);
     const [files, setFiles] = useState([]);
-    const { data, refetch } = api.fileManager.getFolder.useQuery({
+    const [firstFetch, setFirstFetch] = useState(true);
+    const { data, refetch, isSuccess } = api.fileManager.getFolder.useQuery({
         id: currentFolderId,
     });
 
+    // set Data on first fetch
     useEffect(() => {
-        if (data) {
+        if (isSuccess && firstFetch) {
             setFiles(data);
+            setFirstFetch(false);
         }
-    }, [data]);
+    }, [isSuccess]);
 
     const createFolder = () => {
         setModalOpen(!modalOpen);
@@ -42,6 +50,49 @@ export default function Index() {
         await refetch();
     };
 
+    const saveFileToDatabase = async (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            const arrayBuffer = reader.result as ArrayBuffer;
+            const buffer = Buffer.from(arrayBuffer);
+
+            const base64Content = buffer.toString('base64');
+
+            const fileData: FileProps = {
+                name: file.name,
+                size: file.size,
+                content: base64Content,
+            };
+
+            fetch('/api/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(fileData),
+            })
+                .then((response) => {
+                    console.log(response);
+                })
+                .then((data) => {
+                    console.log(data);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        };
+
+        reader.onerror = (error) => {
+            console.log(error);
+        };
+
+        reader.readAsArrayBuffer(file);
+    };
+
     return (
         <>
             {modalOpen && (
@@ -54,10 +105,7 @@ export default function Index() {
             <div className="bg-white rounded shadow">
                 <div className="flex items-center p-2 bg-blue-500 gap-2 text-white">
                     <span>File Explorer</span>
-                    <ToolbarButton
-                        icon={<CloudArrowUpIcon className="h-5 w-5" />}
-                        onClick={() => {}}
-                    />
+                    <input type="file" onChange={saveFileToDatabase} />
                     <ToolbarButton
                         icon={<FolderPlusIcon className="h-5 w-5" />}
                         onClick={() => createFolder()}
@@ -72,6 +120,8 @@ export default function Index() {
                         <Sidebar
                             data={files}
                             onSelectFolder={setCurrentFolderId}
+                            breadcrumb={breadcrumb}
+                            setBreadcrumb={setBreadcrumb}
                         />
                     </div>
                     <div className="w-3/4">

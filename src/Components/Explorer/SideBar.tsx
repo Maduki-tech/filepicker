@@ -1,25 +1,90 @@
 import { ChevronDownIcon, FolderIcon } from '@heroicons/react/20/solid';
+import { dateiablage } from '@prisma/client';
 import React from 'react';
-import { dataProps, dateiablageProps } from '~/types/Explorer';
+import { BreadCrumbProps, dataProps, dateiablageProps } from '~/types/Explorer';
+
+type SidebarProps = {
+    data: dataProps;
+    onSelectFolder: React.Dispatch<any>;
+    breadcrumb: BreadCrumbProps[];
+    setBreadcrumb: React.Dispatch<React.SetStateAction<BreadCrumbProps[]>>;
+};
 
 const Sidebar = ({
     data,
     onSelectFolder,
-}: dataProps & { onSelectFolder: React.Dispatch<any> }) => {
-    const handleFolderClick = (folderId: string) => {
-        onSelectFolder(folderId); // Update the current folder ID in the parent component
-    };
+    breadcrumb,
+    setBreadcrumb,
+}: SidebarProps) => {
+    const [openFolders, setOpenFolders] = React.useState([]);
 
-    const renderFiles = (files: dateiablageProps[]) => {
+    const handleFolderClick = (
+        folderId: string,
+        folderName: string,
+        folderParentID: string
+    ) => {
+        onSelectFolder(folderId);
+        if (folderParentID === null) {
+            setBreadcrumb([
+                {
+                    id: null,
+                    name: 'Home',
+                    current: true,
+                },
+                {
+                    id: folderId,
+                    name: folderName,
+                    current: true,
+                },
+            ]);
+            return;
+        }
+
+        if (openFolders.includes(folderId)) {
+            setOpenFolders(openFolders.filter((id) => id !== folderId));
+        } else {
+            setOpenFolders([...openFolders, folderId]);
+            setBreadcrumb((prev) => {
+                // Update the breadcrumb state
+                const index = prev.findIndex((item) => item.id === folderId);
+                // check if item is parent
+
+                if (index === -1) {
+                    return [
+                        ...prev,
+                        {
+                            id: folderId,
+                            name: folderName,
+                            current: true,
+                        },
+                    ];
+                }
+                return prev.slice(0, index + 1);
+            });
+        }
+    };
+    const renderFiles = (
+        files: dateiablageProps[] | dateiablageProps['other_dateiablage']
+    ) => {
         if (!files) return null;
         return files.map((file) => (
             <div
                 key={file.id}
-                className="flex items-center cursor-pointer"
-                onClick={() => handleFolderClick(file.id)}
+                className="flex justify-center flex-col cursor-pointer"
+                onClick={() =>
+                    handleFolderClick(file.id, file.name, file.parent_id)
+                }
             >
-                <FolderIcon className="h-5 w-5 mr-2" />
-                {file.name}
+                <div className="flex">
+                    <FolderIcon className="h-5 w-5 mr-1" />
+                    {file.name}
+                </div>
+
+                <div className="ml-4">
+                    {openFolders.includes(file.id) &&
+                        file.other_dateiablage &&
+                        renderFiles(file.other_dateiablage)}
+                </div>
             </div>
         ));
     };

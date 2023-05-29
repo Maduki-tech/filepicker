@@ -1,5 +1,4 @@
 import { z } from 'zod';
-
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 
 export const fileManagerRoute = createTRPCRouter({
@@ -13,6 +12,7 @@ export const fileManagerRoute = createTRPCRouter({
                 include: {
                     dateiablage: true,
                     dateiablage_typ: true,
+                    other_dateiablage: true,
                 },
             });
         }),
@@ -31,22 +31,14 @@ export const fileManagerRoute = createTRPCRouter({
                 },
             });
         }),
+
     createFolderInside: publicProcedure
         .input(z.object({ name: z.string(), parent_id: z.string() }))
         .mutation(({ input, ctx }) => {
             return ctx.prisma.dateiablage.create({
                 data: {
                     name: input.name,
-                    other_dateiablage: {
-                        connect: {
-                            id: input.parent_id,
-                        },
-                    },
-                    dateiablage_typ: {
-                        create: {
-                            bezeichnung: 'Folder',
-                        },
-                    },
+                    parent_id: input.parent_id,
                 },
             });
         }),
