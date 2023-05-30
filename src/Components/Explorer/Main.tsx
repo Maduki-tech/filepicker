@@ -120,7 +120,7 @@ const MainContent = ({
             <tr
                 key={file.id}
                 onContextMenu={(e) => handleContextMenu(e, file)}
-                className="hover:bg-blue-100 hover:cursor-pointer"
+                className="hover:bg-blue-100 hover:cursor-pointer bg-neutral-200"
                 onClick={() => handleFolderClick(file.name, file.id)}
             >
                 <td className="whitespace-nowrap flex py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
@@ -180,7 +180,7 @@ const MainContent = ({
             <div className="flow-root">
                 <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                     <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                        <table className="min-w-full divide-y divide-gray-300">
+                        <table className="min-w-full divide-y divide-neutral-500">
                             <thead>
                                 <tr>
                                     <th
@@ -211,7 +211,7 @@ const MainContent = ({
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200 bg-white">
+                            <tbody className="divide-y divide-neutral-400 bg-white">
                                 {renderFiles(data)}
                             </tbody>
                         </table>

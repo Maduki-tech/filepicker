@@ -130,7 +130,7 @@ const Sidebar = ({ data, onSelectFolder, setBreadcrumb }: SidebarProps) => {
     };
 
     return (
-        <div className="flex flex-col bg-gray-200 h-full">
+        <div className="flex flex-col bg-neutral-100 h-full">
             <div className="p-4">
                 <h2 className="text-xl font-bold">File Explorer</h2>
             </div>

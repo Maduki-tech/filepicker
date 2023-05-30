@@ -102,7 +102,7 @@ export default function Index() {
                     currentFolderId={currentFolderId}
                 />
             )}
-            <div className="bg-white rounded shadow">
+            <div className="bg-white rounded shadow h-[calc(100vh-4rem)] overflow-hidden">
                 <div className="flex items-center p-2 bg-blue-500 gap-2 text-white">
                     <span>File Explorer</span>
                     <input type="file" onChange={saveFileToDatabase} />
@@ -115,16 +115,15 @@ export default function Index() {
                         onClick={() => handleRefetch()}
                     />
                 </div>
-                <div className="flex">
+                <div className="flex h-full">
                     <div className="w-1/4 border-r">
                         <Sidebar
                             data={files}
                             onSelectFolder={setCurrentFolderId}
-                            breadcrumb={breadcrumb}
                             setBreadcrumb={setBreadcrumb}
                         />
                     </div>
-                    <div className="w-3/4">
+                    <div className="w-3/4 bg-neutral-200">
                         <MainContent
                             data={data}
                             currentFolderId={currentFolderId}
