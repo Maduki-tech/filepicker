@@ -2,6 +2,13 @@ import { UserButton, useUser } from '@clerk/nextjs';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
+const links = [
+    { href: '/', label: 'Einstieg' },
+    { href: '/Explorer', label: 'Explorer' },
+    { href: '/Anlegen', label: 'Beteiligten Anlegen' },
+
+];
+
 export default function Navbar() {
     const { user, isSignedIn } = useUser();
     const router = useRouter();
@@ -24,26 +31,21 @@ export default function Navbar() {
                             />
                         </div>
                         <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                            <Link
-                                href="/"
+
+                            {links.map(({ href, label }) => (
+
+                                <Link
+                                    key={`${href}${label}`}
+                                    href={href}
                                 className={`inline-flex items-center border-b-2 ${
                                     router.pathname === '/'
                                         ? 'border-indigo-500'
                                         : 'border-transparent'
                                 } border-indigo-500 px-1 pt-1 text-sm font-medium text-gray-900`}
-                            >
-                                Einstieg
-                            </Link>
-                            <Link
-                                href="/Explorer"
-                                className={`inline-flex items-center border-b-2 ${
-                                    router.pathname === '/Explorer'
-                                        ? 'border-indigo-500'
-                                        : 'border-transparent'
-                                } border-indigo-500 px-1 pt-1 text-sm font-medium text-gray-900`}
-                            >
-                                Explorer
-                            </Link>
+                                >
+                                    {label}
+                                </Link>
+                            ))}
                         </div>
                     </div>
                     <div className="absolute inset-y-0 right-0 gap-2 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">

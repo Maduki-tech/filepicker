@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { api } from '~/utils/api';
-import { CheckIcon } from '@heroicons/react/20/solid';
+import { CheckIcon, ChevronUpDownIcon, FolderOpenIcon } from '@heroicons/react/20/solid';
 import { Combobox } from '@headlessui/react';
 import { type dateiablage } from '@prisma/client';
 
@@ -22,7 +22,7 @@ export default function MoveFileModal({
             await moveFolder.mutateAsync({
                 id: folderName.id,
                 parent_id: currentFolder?.id,
-                });
+            });
         }
         setModalOpen(false);
     };
@@ -55,9 +55,9 @@ export default function MoveFileModal({
                         >
                             <Dialog.Panel className="relative transform rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                                 <div>
-                                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                                        <CheckIcon
-                                            className="h-6 w-6 text-green-600"
+                                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+                                        <FolderOpenIcon
+                                            className="h-6 w-6 text-blue-600"
                                             aria-hidden="true"
                                         />
                                     </div>
@@ -70,14 +70,14 @@ export default function MoveFileModal({
                                         </Dialog.Title>
                                     </div>
                                 </div>
-                                <div className="mt-5 sm:mt-6">
+                                <div className="mt-5 sm:mt-6 flex flex-col items-end">
                                     <AutoCompleteBox
                                         setFolderToChangeTo={setFolderName}
                                     />
 
                                     <button
                                         type="button"
-                                        className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                        className="inline-flex w-2/6 justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                         onClick={move}
                                     >
                                         Verschieben
@@ -105,9 +105,7 @@ function AutoCompleteBox({
     const [selectedAkte, setSelectedAkte] = useState(null);
 
     //TODO: Get all folders in whole Database
-    const { data, refetch } = api.fileManager.getFolder.useQuery({
-        id: null,
-    });
+    const { data } = api.fileManager.getAllFolder.useQuery();
 
     const filteredAkten =
         query === ''
@@ -123,7 +121,7 @@ function AutoCompleteBox({
     }, [selectedAkte]);
 
     return (
-        <Combobox as="div" value={selectedAkte} onChange={setSelectedAkte}>
+        <Combobox as="div" className='w-full' value={selectedAkte} onChange={setSelectedAkte}>
             <div className="relative mb-2">
                 <Combobox.Input
                     className="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -131,6 +129,12 @@ function AutoCompleteBox({
                     onChange={(event) => setQuery(event.target.value)}
                     displayValue={(folder: dateiablage) => folder?.name}
                 />
+                <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                    <ChevronUpDownIcon
+                        className="h-5 w-5 text-gray-400"
+                        aria-hidden="true"
+                    />
+                </Combobox.Button>
 
                 <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                     {filteredAkten.map((akte) => (

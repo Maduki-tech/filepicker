@@ -2,6 +2,7 @@ import { Fragment, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/24/outline';
 import { api } from '~/utils/api';
+import { PencilIcon } from '@heroicons/react/20/solid';
 
 export default function InputModal({
     setFiles,
@@ -60,9 +61,9 @@ export default function InputModal({
                         >
                             <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                                 <div>
-                                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                                        <CheckIcon
-                                            className="h-6 w-6 text-green-600"
+                                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
+                                        <PencilIcon
+                                            className="h-6 w-6 text-yellow-600"
                                             aria-hidden="true"
                                         />
                                     </div>
@@ -71,11 +72,11 @@ export default function InputModal({
                                             as="h3"
                                             className="text-base font-semibold leading-6 text-gray-900"
                                         >
-                                            Ornder Name eingeben
+                                            Ordner Name eingeben
                                         </Dialog.Title>
                                     </div>
                                 </div>
-                                <div className="mt-5 sm:mt-6">
+                                <div className="mt-5 sm:mt-6 flex flex-grow gap-2">
                                     <input
                                         type="text"
                                         onChange={(e) =>
@@ -87,7 +88,7 @@ export default function InputModal({
 
                                     <button
                                         type="button"
-                                        className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                        className="inline-flex w-3/5 justify-center rounded-md bg-indigo-600 px-1 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                         onClick={create}
                                     >
                                         Ordner Erstellen
