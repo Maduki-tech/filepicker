@@ -1,21 +1,25 @@
 import { FolderIcon } from '@heroicons/react/20/solid';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BreadCrumbProps, dataProps, dateiablageProps } from '~/types/Explorer';
+import { api } from '~/utils/api';
 
 type SidebarProps = {
     data: dataProps[];
     onSelectFolder: React.Dispatch<any>;
-    breadcrumb: BreadCrumbProps[];
     setBreadcrumb: React.Dispatch<React.SetStateAction<BreadCrumbProps[]>>;
 };
 
-const Sidebar = ({
-    data,
-    onSelectFolder,
-    breadcrumb,
-    setBreadcrumb,
-}: SidebarProps) => {
+const Sidebar = ({ data, onSelectFolder, setBreadcrumb }: SidebarProps) => {
     const [openFolders, setOpenFolders] = React.useState([]);
+    const [allDataFetched, setAllData] = React.useState([]);
+
+    const allData = api.fileManager.getAllFolder.useQuery();
+
+    useEffect(() => {
+        if (allData.isSuccess) {
+            setAllData(allData.data);
+        }
+    }, [allData.isSuccess]);
 
     const handleFolderClick = (
         folderId: string,
@@ -36,11 +40,12 @@ const Sidebar = ({
                     current: true,
                 },
             ]);
-            return;
+            // return;
         }
 
         if (openFolders.includes(folderId)) {
             setOpenFolders(openFolders.filter((id) => id !== folderId));
+            console.log(openFolders);
         } else {
             setOpenFolders([...openFolders, folderId]);
             setBreadcrumb((prev) => {
@@ -62,11 +67,15 @@ const Sidebar = ({
             });
         }
     };
+
     const renderFiles = (
-        files: dateiablageProps[] | dateiablageProps['other_dateiablage'] | dataProps[]
+        files:
+            | dateiablageProps[]
+            | dateiablageProps['other_dateiablage']
+            | dataProps[]
     ) => {
         if (!files) return null;
-        return files.map((file) => (
+        return allDataFetched.map((file: dateiablageProps) => (
             <div
                 key={file.id}
                 className="flex justify-center flex-col cursor-pointer"
@@ -74,15 +83,47 @@ const Sidebar = ({
                     handleFolderClick(file.id, file.name, file.parent_id)
                 }
             >
-                <div className="flex">
-                    <FolderIcon className="h-5 w-5 mr-1" />
-                    {file.name}
-                </div>
+                {file.parent_id === null && (
+                    <div className="flex">
+                        <FolderIcon className="h-5 w-5 mr-1" />
+                        {file.name}
+                    </div>
+                )}
 
                 <div className="ml-4">
-                    {openFolders.includes(file.id) &&
-                        file.other_dateiablage &&
-                        renderFiles(file.other_dateiablage)}
+                    {/* if the file has the same parent id as the current folder then render it */}
+
+                    {file.id ===
+                        openFolders.find((allParentID: string) => {
+                            console.log(allParentID);
+                            return allParentID === file.id;
+                        }) && (
+                        <div className="flex flex-col">
+                            {allDataFetched.map((file: dateiablageProps) => {
+                                if (openFolders.includes(file.parent_id)) {
+                                console.log('file', file);
+                                    return (
+                                        <div
+                                            key={file.id}
+                                            className="flex justify-center flex-col cursor-pointer"
+                                            onClick={() =>
+                                                handleFolderClick(
+                                                    file.id,
+                                                    file.name,
+                                                    file.parent_id
+                                                )
+                                            }
+                                        >
+                                            <div className="flex">
+                                                <FolderIcon className="h-5 w-5 mr-1" />
+                                                {file.name}
+                                            </div>
+                                        </div>
+                                    );
+                                }
+                            })}
+                        </div>
+                    )}
                 </div>
             </div>
         ));

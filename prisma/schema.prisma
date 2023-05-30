@@ -32,19 +32,20 @@ model File {
 }
 
 model akte {
-  id                    String        @id(map: "PK_akte") @default(dbgenerated("newid()"), map: "DF_akte_id") @db.UniqueIdentifier
-  aktenschrank_id       String?       @db.UniqueIdentifier
-  aktenname             String        @db.VarChar(200)
-  aktenzeichen          String        @db.VarChar(12)
-  sachbearbeiter        String?       @db.NChar(10)
-  vorlage_briefkopf     String?       @db.UniqueIdentifier
-  vorlage_briefbaustein String?       @db.UniqueIdentifier
-  ordner_id             String?       @db.VarChar(200)
-  angelegt_am           DateTime      @default(now(), map: "DF_akte_angelegt_am") @db.DateTime
-  ge_ndert_am           DateTime      @default(now(), map: "DF_akte_geändert_am") @map("geändert_am") @db.DateTime
-  angelegt_von          String?       @db.NChar(10)
-  ge_ndert_von          String?       @map("geändert_von") @db.NChar(10)
-  aktenschrank          aktenschrank? @relation(fields: [aktenschrank_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_akte_team")
+  id                    String         @id(map: "PK_akte") @default(dbgenerated("newid()"), map: "DF_akte_id") @db.UniqueIdentifier
+  aktenschrank_id       String?        @db.UniqueIdentifier
+  aktenname             String         @db.VarChar(200)
+  aktenzeichen          String         @db.VarChar(12)
+  sachbearbeiter        String?        @db.NChar(10)
+  vorlage_briefkopf     String?        @db.UniqueIdentifier
+  vorlage_briefbaustein String?        @db.UniqueIdentifier
+  ordner_id             String?        @db.VarChar(200)
+  angelegt_am           DateTime       @default(now(), map: "DF_akte_angelegt_am") @db.DateTime
+  ge_ndert_am           DateTime       @default(now(), map: "DF_akte_geändert_am") @map("geändert_am") @db.DateTime
+  angelegt_von          String?        @db.NChar(10)
+  ge_ndert_von          String?        @map("geändert_von") @db.NChar(10)
+  aktenschrank          aktenschrank?  @relation(fields: [aktenschrank_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_akte_team")
+  akte_zugriff          akte_zugriff[]
   beteiligter           beteiligter[]
 }
 
@@ -130,12 +131,19 @@ model dateiablage_typ {
   dateiablage dateiablage[]
 }
 
-model sysdiagrams {
-  name         String @db.NVarChar(128)
-  principal_id Int
-  diagram_id   Int    @id(map: "PK__sysdiagr__C2B05B61A0975439") @default(autoincrement())
-  version      Int?
-  definition   Bytes?
+model akte_zugriff {
+  id          String   @id(map: "PK_akte_zugriff") @default(dbgenerated("newid()"), map: "DF_akte_zugriff_id") @db.UniqueIdentifier
+  benutzer_id String   @db.UniqueIdentifier
+  akte_id     String   @db.UniqueIdentifier
+  zeitpunkt   DateTime @default(now(), map: "DF_akte_zugriff_zeitpunkt") @db.DateTime
+  akte        akte     @relation(fields: [akte_id], references: [id], onUpdate: NoAction, map: "FK_akte_zugriff_akte")
+  benutzer    benutzer @relation(fields: [benutzer_id], references: [id], onUpdate: NoAction, map: "FK_akte_zugriff_benutzer")
+}
 
-  @@unique([principal_id, name], map: "UK_principal_name")
+model benutzer {
+  id           String         @id(map: "PK_benutzer") @default(dbgenerated("newid()"), map: "DF_benutzer_id") @db.UniqueIdentifier
+  name         String?        @db.VarChar(200)
+  vorname      String?        @db.VarChar(200)
+  rolle        String?        @default("user", map: "DF_benutzer_rolle") @db.VarChar(200)
+  akte_zugriff akte_zugriff[]
 }
