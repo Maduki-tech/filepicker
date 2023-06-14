@@ -71,12 +71,12 @@ const Home: NextPage = () => {
                         </span>
                     )}
 
-                    {/* <Input setFilterName={setFilterName} /> */}
-                    {/* <DropDown */}
-                    {/*     selectableItems={selectableItems} */}
-                    {/*     setSelected={setSelected} */}
-                    {/*     selected={selected} */}
-                    {/* /> */}
+                    <Input setFilterName={setFilterName} />
+                    <DropDown
+                        selectableItems={selectableItems}
+                        setSelected={setSelected}
+                        selected={selected}
+                    />
                 </div>
                 <div className="">
                     {isFetching && data === undefined ? (
@@ -100,9 +100,9 @@ const Home: NextPage = () => {
                         <div>
                             <DataView />
 
-                            {/* <ItemList pageLength={1} data={splitData} /> */}
-                            {/* <Pagination setPageNumber={setPageNumber} pageLength={pageLength} */}
-                            {/* /> */}
+                            <ItemList pageLength={1} data={splitData} />
+                            <Pagination setPageNumber={setPageNumber} pageLength={pageLength}
+                            />
                         </div>
                     )}
                 </div>
