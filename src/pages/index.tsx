@@ -18,6 +18,13 @@ const selectableItems = [
     { id: 2, name: 'Aktenschrank' },
 ];
 
+type googleState = {
+    ids: string[];
+    action: string;
+    userId: string;
+    resourceKeys: string[];
+};
+
 const Home: NextPage = () => {
     const [selected, setSelected] = useState(selectableItems[0]);
     const [filterName, setFilterName] = useState<string>('');
@@ -26,7 +33,11 @@ const Home: NextPage = () => {
     const [pageNumber, setPageNumber] = useState<number>(1);
     const [pageLength, setPageLength] = useState<number>(1);
     const router = useRouter();
-    const { state, ids, action, userId, ressourceKeys } = router.query;
+    const { state } = router.query;
+    const stateJson: googleState = state
+        ? JSON.parse(state as string)
+        : undefined;
+    console.log(stateJson);
 
     const { data, refetch, isFetching, isSuccess } =
         api.fileManager.getAkten.useQuery({
@@ -65,18 +76,14 @@ const Home: NextPage = () => {
             </Head>
             <main>
                 <div className="flex mt-2 w-screen justify-center gap-3">
-                    {ids && action && userId && ressourceKeys && (
-                        <span className="text-green-500">
-                            {action} {ids} {userId} {ressourceKeys}
-                        </span>
-                    )}
+                    {stateJson && <span className="text-green-500">{stateJson?.userId}</span>}
 
-                    <Input setFilterName={setFilterName} />
-                    <DropDown
-                        selectableItems={selectableItems}
-                        setSelected={setSelected}
-                        selected={selected}
-                    />
+                    {/* <Input setFilterName={setFilterName} /> */}
+                    {/* <DropDown */}
+                    {/*     selectableItems={selectableItems} */}
+                    {/*     setSelected={setSelected} */}
+                    {/*     selected={selected} */}
+                    {/* /> */}
                 </div>
                 <div className="">
                     {isFetching && data === undefined ? (
@@ -100,9 +107,9 @@ const Home: NextPage = () => {
                         <div>
                             <DataView />
 
-                            <ItemList pageLength={1} data={splitData} />
-                            <Pagination setPageNumber={setPageNumber} pageLength={pageLength}
-                            />
+                            {/* <ItemList pageLength={1} data={splitData} /> */}
+                            {/* <Pagination setPageNumber={setPageNumber} pageLength={pageLength} */}
+                            {/* /> */}
                         </div>
                     )}
                 </div>
