@@ -1,6 +1,7 @@
 import { akte } from '@prisma/client';
 import { type NextPage } from 'next';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 import DropDown from '~/Components/Entry/Dropdown';
@@ -8,6 +9,7 @@ import Input from '~/Components/Entry/Input';
 import ItemList from '~/Components/Entry/ItemList';
 import Pagination from '~/Components/Entry/Pagination';
 import Navbar from '~/Components/Navbar';
+import { aktenMetadata, dataview } from '~/data';
 import { api } from '~/utils/api';
 
 //TODO: get the filter data i want Akten? Aktenschrank?
@@ -23,6 +25,8 @@ const Home: NextPage = () => {
     const [splitData, setSplitData] = useState<akte[]>([]);
     const [pageNumber, setPageNumber] = useState<number>(1);
     const [pageLength, setPageLength] = useState<number>(1);
+    const router = useRouter();
+    const { state, ids, action, userId, ressourceKeys } = router.query;
 
     const { data, refetch, isFetching, isSuccess } =
         api.fileManager.getAkten.useQuery({
@@ -61,14 +65,20 @@ const Home: NextPage = () => {
             </Head>
             <main>
                 <div className="flex mt-2 w-screen justify-center gap-3">
-                    <Input setFilterName={setFilterName} />
-                    <DropDown
-                        selectableItems={selectableItems}
-                        setSelected={setSelected}
-                        selected={selected}
-                    />
+                    {ids && action && userId && ressourceKeys && (
+                        <span className="text-green-500">
+                            {action} {ids} {userId} {ressourceKeys}
+                        </span>
+                    )}
+
+                    {/* <Input setFilterName={setFilterName} /> */}
+                    {/* <DropDown */}
+                    {/*     selectableItems={selectableItems} */}
+                    {/*     setSelected={setSelected} */}
+                    {/*     selected={selected} */}
+                    {/* /> */}
                 </div>
-                <div className="px-96">
+                <div className="">
                     {isFetching && data === undefined ? (
                         <div className="absolute inset-0 bg-black/10">
                             <div className="relative left-1/2 top-1/2 z-50">
@@ -88,9 +98,11 @@ const Home: NextPage = () => {
                         </div>
                     ) : (
                         <div>
-                            <ItemList pageLength={1} data={splitData} />
-                            <Pagination setPageNumber={setPageNumber} pageLength={pageLength}
-                            />
+                            <DataView />
+
+                            {/* <ItemList pageLength={1} data={splitData} /> */}
+                            {/* <Pagination setPageNumber={setPageNumber} pageLength={pageLength} */}
+                            {/* /> */}
                         </div>
                     )}
                 </div>
@@ -98,5 +110,116 @@ const Home: NextPage = () => {
         </>
     );
 };
+function DataView() {
+    const header = [
+        'id',
+        'name',
+        'description',
+        'created',
+        'modified',
+        'status',
+        'type',
+        'tags',
+        'owner',
+        'creator',
+        'company',
+        'location',
+        'department',
+        'category',
+    ];
+
+    return (
+        <div className="px-4 sm:px-6 lg:px-2">
+            <div className="sm:flex sm:items-center">
+                <div className="sm:flex-auto">
+                    <h1 className="text-base text-center font-semibold leading-6 text-gray-900">
+                        Akte #0012910# - TestAkte
+                    </h1>
+                </div>
+            </div>
+            <div className="mt-8 flow-root">
+                <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                    <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                        <table className="min-w-full divide-y divide-gray-300">
+                            <thead>
+                                <tr>
+                                    {header.map((h) => (
+                                        <th
+                                            key={h}
+                                            scope="col"
+                                            className="px-3 py-3 text-left text-sm font-semibold text-gray-900"
+                                        >
+                                            {h}
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white">
+                                {aktenMetadata.map((akteData) => (
+                                    <tr
+                                        key={akteData.name}
+                                        className="even:bg-gray-50 hover:even:bg-gray-200 hover:bg-gray-100"
+                                    >
+                                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
+                                            {akteData.id}
+                                        </td>
+                                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
+                                            {akteData.name}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                            {akteData.description}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                            {akteData.created}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                            {akteData.modified}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                            {akteData.status}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                            {akteData.type}
+                                        </td>
+
+                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                            {akteData.tags.map((tag) => (
+                                                <span
+                                                    key={tag}
+                                                    className="mr-1 inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800"
+                                                >
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                            {akteData.owner}
+                                        </td>
+
+                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                            {akteData.creator}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                            {akteData.company}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                            {akteData.location}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                            {akteData.department}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                            {akteData.category}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 export default Home;

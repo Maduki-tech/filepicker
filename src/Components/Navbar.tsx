@@ -6,6 +6,8 @@ const links = [
     { href: '/', label: 'Einstieg' },
     { href: '/Explorer', label: 'Explorer' },
     { href: '/Anlegen', label: 'Beteiligten Anlegen' },
+    { href: '/Editor', label: 'Editor' },
+
 
 ];
 

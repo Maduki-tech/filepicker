@@ -1,5 +1,7 @@
 import { createTRPCRouter } from "~/server/api/trpc";
 import { fileManagerRoute } from "./routers/fileManagerRouter";
+import { googleAPIRoute } from "./routers/googleAPIRoute";
+import { userManagerRoute } from "./routers/userManagerRouter";
 
 /**
  * This is the primary router for your server.
@@ -8,6 +10,8 @@ import { fileManagerRoute } from "./routers/fileManagerRouter";
  */
 export const appRouter = createTRPCRouter({
     fileManager: fileManagerRoute,
+    googleAPI: googleAPIRoute,
+    userManger: userManagerRoute,
 });
 
 
