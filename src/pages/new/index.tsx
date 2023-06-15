@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React from 'react'
+import React from 'react';
 
 type googleState = {
     ids: string[];
@@ -7,7 +7,7 @@ type googleState = {
     userId: string;
     resourceKeys: string[];
 };
-export const index = (props : {}) => {
+const index = (props: {}) => {
     const router = useRouter();
     const { state } = router.query;
     const stateJson: googleState = state
@@ -16,7 +16,8 @@ export const index = (props : {}) => {
     return (
         <div>
             <span>state: {state}</span>
-            
         </div>
-    )
-}
+    );
+};
+
+export default index;
