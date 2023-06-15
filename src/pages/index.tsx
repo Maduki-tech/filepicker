@@ -1,3 +1,4 @@
+import { useUser } from '@clerk/nextjs';
 import { akte } from '@prisma/client';
 import { type NextPage } from 'next';
 import Head from 'next/head';
@@ -32,12 +33,14 @@ const Home: NextPage = () => {
     const [splitData, setSplitData] = useState<akte[]>([]);
     const [pageNumber, setPageNumber] = useState<number>(1);
     const [pageLength, setPageLength] = useState<number>(1);
+    const {user} = useUser();
     const router = useRouter();
+
     const { state } = router.query;
     const stateJson: googleState = state
         ? JSON.parse(state as string)
         : undefined;
-    console.log(stateJson);
+    console.log(user);
 
     const { data, refetch, isFetching, isSuccess } =
         api.fileManager.getAkten.useQuery({
