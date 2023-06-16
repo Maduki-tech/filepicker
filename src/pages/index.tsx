@@ -12,6 +12,7 @@ import Pagination from '~/Components/Entry/Pagination';
 import Navbar from '~/Components/Navbar';
 import { aktenMetadata, dataview } from '~/data';
 import { api } from '~/utils/api';
+import { env } from '~/env.mjs';
 
 //TODO: get the filter data i want Akten? Aktenschrank?
 const selectableItems = [
@@ -33,19 +34,62 @@ const Home: NextPage = () => {
     const [splitData, setSplitData] = useState<akte[]>([]);
     const [pageNumber, setPageNumber] = useState<number>(1);
     const [pageLength, setPageLength] = useState<number>(1);
-    const {user} = useUser();
+    const { user } = useUser();
     const router = useRouter();
 
     const { state } = router.query;
     const stateJson: googleState = state
         ? JSON.parse(state as string)
         : undefined;
-    console.log(user);
+    // console.log(user);
 
     const { data, refetch, isFetching, isSuccess } =
         api.fileManager.getAkten.useQuery({
             name: filterName ? filterName : undefined,
         });
+
+    // Array of API discovery doc URLs for APIs
+    const DISCOVERY_DOCS = [
+        'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest',
+    ];
+
+    // Authorization scopes required by the API; multiple scopes can be
+    // included, separated by spaces.
+    const SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly';
+
+    const initClient = async () => {
+       const gapi = await import('gapi-script').then((pack) => pack.gapi);
+        gapi.client
+            .init({
+                apiKey: env.NEXT_PUBLIC_GOOGLE_DRIVE_API,
+                clientId: env.NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID,
+                discoveryDocs: DISCOVERY_DOCS,
+                scope: SCOPES,
+            })
+            .then(
+                function () {
+                    // Listen for sign-in state changes.
+                    gapi.auth2
+                        .getAuthInstance()
+                        .isSignedIn.listen(updateSigninStatus);
+
+                    // Handle the initial sign-in state.
+                    updateSigninStatus(
+                        gapi.auth2.getAuthInstance().isSignedIn.get()
+                    );
+                },
+                function (error) {}
+            );
+    };
+
+    // GAPI FUnction
+    useEffect(() => {
+        const handleClientLoad = async () => {
+            const gapi = await import('gapi-script').then((pack) => pack.gapi);
+            gapi.load('client:auth2', initClient);
+        };
+        handleClientLoad();
+    }, []);
 
     // filter and fetch data
     useEffect(() => {
@@ -79,7 +123,11 @@ const Home: NextPage = () => {
             </Head>
             <main>
                 <div className="flex mt-2 w-screen justify-center gap-3">
-                    {stateJson && <span className="text-green-500">{stateJson?.userId}</span>}
+                    {stateJson && (
+                        <span className="text-green-500">
+                            {stateJson?.userId}
+                        </span>
+                    )}
 
                     {/* <Input setFilterName={setFilterName} /> */}
                     {/* <DropDown */}

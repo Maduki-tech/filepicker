@@ -9,9 +9,6 @@ const server = z.object({
     SHADOW_DB_URL: z.string(),
     NODE_ENV: z.enum(['development', 'test', 'production']),
     CLERK_SECRET_KEY: z.string().min(1),
-    FLOXGTENANTID: z.string().min(1),
-    FLOXGCLIENTID: z.string().min(1),
-    FLOXGCLIENTSECRET: z.string().min(1),
 });
 
 /**
@@ -27,7 +24,8 @@ const client = z.object(
         NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string().min(1),
         NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: z.string().min(1),
         NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: z.string().min(1),
-
+        NEXT_PUBLIC_GOOGLE_DRIVE_API: z.string().min(1),
+        NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID: z.string().min(1),
         // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
     })
 );
@@ -53,9 +51,9 @@ const processEnv = {
         process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL,
     NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL:
         process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL,
-    FLOXGTENANTID: process.env.FLOXGTENANTID,
-    FLOXGCLIENTID: process.env.FLOXGCLIENTID,
-    FLOXGCLIENTSECRET: process.env.FLOXGCLIENTSECRET,
+    NEXT_PUBLIC_GOOGLE_DRIVE_API: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API,
+    NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID:
+        process.env.NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID,
 
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
