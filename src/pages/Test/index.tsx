@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { env } from '~/env.mjs';
+import React from 'react';
 import { google } from 'googleapis';
 
 const SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly';
@@ -13,16 +12,15 @@ export const getServerSideProps = async () => {
 
     const drive = google.drive({ version: 'v3', auth });
 
-    const res = await drive.files.list({
-        pageSize: 10,
-        fields: 'nextPageToken, files(id, name)',
+    const about = await drive.about.get({
+        fields: '*',
     });
-
-    const files = res.data.files;
+    console.log(about);
+    const user = about.data.user.displayName;
 
     return {
         props: {
-            files,
+            user,
         },
     };
 };

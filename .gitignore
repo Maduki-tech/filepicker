@@ -6,6 +6,8 @@
 .pnp.js
 .npm-lock.json
 .package-lock.json
+.credentials.json
+.test.json
 
 # testing
 /coverage
