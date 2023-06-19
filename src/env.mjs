@@ -26,7 +26,7 @@ const client = z.object(
         NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: z.string().min(1),
         NEXT_PUBLIC_GOOGLE_DRIVE_API: z.string().min(1),
         NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID: z.string().min(1),
-        // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
+        NEXT_PUBLIC_GOOGLE_CREDENTIALS: z.string().min(1),
     })
 );
 
@@ -54,6 +54,8 @@ const processEnv = {
     NEXT_PUBLIC_GOOGLE_DRIVE_API: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API,
     NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID:
         process.env.NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID,
+
+    NEXT_PUBLIC_GOOGLE_CREDENTIALS: process.env.NEXT_PUBLIC_GOOGLE_CREDENTIALS,
 
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };

@@ -1,80 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { env } from '~/env.mjs';
+import { google } from 'googleapis';
 
-export default function Index() {
-    const [signedInUser, setSignedInUser] = useState();
-    // Array of API discovery doc URLs for APIs
-    const DISCOVERY_DOCS = [
-        'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest',
-    ];
+const SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly';
 
-    // Authorization scopes required by the API; multiple scopes can be
-    // included, separated by spaces.
-    const SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly';
+export const getServerSideProps = async () => {
+    const auth = new google.auth.GoogleAuth({
+        keyFile: './test.json',
+        scopes: SCOPES,
+    });
+    google.options({ auth });
 
-    const handleAuthClick = async () => {
-        const gapi = await import('gapi-script').then((pack) => pack.gapi);
-        gapi.auth2.getAuthInstance().signIn();
+    const drive = google.drive({ version: 'v3', auth });
+
+    const res = await drive.files.list({
+        pageSize: 10,
+        fields: 'nextPageToken, files(id, name)',
+    });
+
+    const files = res.data.files;
+
+    return {
+        props: {
+            files,
+        },
     };
+};
 
-    /**
-     *  Called when the signed in status changes, to update the UI
-     *  appropriately. After a sign-in, the API is called.
-     */
-    const updateSigninStatus = async (isSignedIn) => {
-        const gapi = await import('gapi-script').then((pack) => pack.gapi);
-        if (isSignedIn) {
-            // Set the signed in user
-            setSignedInUser(gapi.auth2.getAuthInstance().currentUser.je.Qt);
-        } else {
-            // prompt user to sign in
-            handleAuthClick();
-        }
-    };
-
-    /**
-     *  Sign out the user upon button click.
-     */
-    const handleSignOutClick = async () => {
-        const gapi = await import('gapi-script').then((pack) => pack.gapi);
-        gapi.auth2.getAuthInstance().signOut();
-    };
-
-    const initClient = async () => {
-        const gapi = await import('gapi-script').then((pack) => pack.gapi);
-        gapi.client
-            .init({
-                apiKey: env.NEXT_PUBLIC_GOOGLE_DRIVE_API,
-                clientId: env.NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID,
-                discoveryDocs: DISCOVERY_DOCS,
-                scope: SCOPES,
-            })
-            .then(
-                function () {
-                    // Listen for sign-in state changes.
-                    gapi.auth2
-                        .getAuthInstance()
-                        .isSignedIn.listen(updateSigninStatus);
-
-                    // Handle the initial sign-in state.
-                    updateSigninStatus(
-                        gapi.auth2.getAuthInstance().isSignedIn.get()
-                    );
-                },
-                function (error) {}
-            );
-    };
-
-    // GAPI FUnction
-    const handleClientLoad = async () => {
-        const gapi = await import('gapi-script').then((pack) => pack.gapi);
-        gapi.load('client:auth2', initClient);
-    };
-    handleClientLoad();
-
+export default function Index(props: Record<string, unknown>) {
     return (
         <div>
-            <button onClick={handleClientLoad}>click</button>
+            <h1>Test</h1>
+            <pre>{JSON.stringify(props, null, 2)}</pre>
         </div>
     );
 }
